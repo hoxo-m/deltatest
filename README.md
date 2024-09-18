@@ -65,8 +65,8 @@ df <- data.frame(p_value = p_values) |>
 ggplot(df, aes(p, prop)) +
   geom_col() +
   geom_hline(yintercept = 0.05, color = "red") +
-  scale_y_continuous(breaks = 0:20 / 100, minor_breaks = NULL) +
-  xlab("p-value") + ylab("density")
+  scale_y_continuous(breaks = seq(0, 1, by = 0.01), minor_breaks = NULL) +
+  xlab("p-value") + ylab("proportion")
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
@@ -93,8 +93,8 @@ df <- data.frame(p_value = p_values) |>
 ggplot(df, aes(p, prop)) +
   geom_col() +
   geom_hline(yintercept = 0.05, color = "red") +
-  scale_y_continuous(breaks = 0:20 / 100, minor_breaks = NULL) +
-  xlab("p-value") + ylab("density")
+  scale_y_continuous(breaks = seq(0, 1, by = 0.01), minor_breaks = NULL) +
+  xlab("p-value") + ylab("proportion")
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
