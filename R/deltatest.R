@@ -1,9 +1,9 @@
 #' @importFrom stats pnorm qnorm
 #'
 #' @export
-test_with_delta <- function(numer_c, denom_c, numer_t, denom_t,
-                            type = c("difference", "relative_change"),
-                            order_of_Taylor = c("1", "2")) {
+deltatest <- function(numer_c, denom_c, numer_t, denom_t,
+                      type = c("difference", "relative_change"),
+                      order_of_Taylor = c("1", "2")) {
   # check arguments
   stopifnot(length(numer_c) == length(denom_c))
   stopifnot(length(numer_t) == length(denom_t))

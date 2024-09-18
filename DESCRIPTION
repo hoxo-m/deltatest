@@ -1,4 +1,4 @@
-Package: inferdelta
+Package: deltatest
 Type: Package
 Title: Statistical Hypothesis Test with Delta Method
 Version: 0.0.0.9000

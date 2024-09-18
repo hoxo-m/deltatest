@@ -1,25 +1,25 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# inferdelta
+# deltatest
 
 <!-- badges: start -->
 <!-- badges: end -->
 
 ## Installation
 
-You can install the development version of inferdelta from
+You can install the development version of deltatest from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("hoxo-m/inferdelta")
+remotes::install_github("hoxo-m/deltatest")
 ```
 
 ## Example
 
 ``` r
-library(inferdelta)
+library(deltatest)
 
 n_user <- 2000
 
@@ -27,7 +27,7 @@ set.seed(314)
 df_c <- generate_dummy_data(n_user)
 df_t <- generate_dummy_data(n_user)
 
-test_with_delta(df_c$click, df_c$imp, df_t$click, df_t$imp)
+deltatest(df_c$click, df_c$imp, df_t$click, df_t$imp)
 #> 
 #>  Two Sample z-test with Delta Method
 #> 
@@ -50,8 +50,8 @@ for (i in 1:5000) {
   df_t <- generate_dummy_data(n_user)
   
   x <- rbind(colSums(df_c), colSums(df_t)) |> data.frame()
-  
   result <- prop.test(x$click, x$imp, correct = FALSE)
+  
   p_values[i] <- result$p.value
 }
 
@@ -69,7 +69,7 @@ ggplot(df, aes(p, prop)) +
   xlab("p-value") + ylab("proportion")
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="600" />
 
 ``` r
 set.seed(314)
@@ -79,7 +79,8 @@ for (i in 1:5000) {
   df_c <- generate_dummy_data(n_user)
   df_t <- generate_dummy_data(n_user)
   
-  result <- test_with_delta(df_c$click, df_c$imp, df_t$click, df_t$imp)
+  result <- deltatest(df_c$click, df_c$imp, df_t$click, df_t$imp)
+  
   p_values[i] <- result$p.value
 }
 
@@ -97,4 +98,4 @@ ggplot(df, aes(p, prop)) +
   xlab("p-value") + ylab("proportion")
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="600" />
