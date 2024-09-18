@@ -29,7 +29,7 @@ test_with_delta <- function(numer_c, denom_c, numer_t, denom_t,
   diff <- mean_t - mean_c
 
   if (type == "difference") {
-    z_score <- diff / standard_error
+    z_score <- c("z" = diff / standard_error)
 
     lower <- diff - qnorm(0.975) * standard_error
     upper <- diff + qnorm(0.975) * standard_error
@@ -38,12 +38,12 @@ test_with_delta <- function(numer_c, denom_c, numer_t, denom_t,
                   "difference" = diff)
     null_value <- c("difference in means between control and treatment" = 0)
   } else {  # relative change
-    var <- DeltaMethodForRatio$compute_variance(diff, mean_c, var_of_diff, var_c)
+    var <- DeltaMethodForRatio$compute_variance(diff, mean_c, var_of_diff, var_c / n_c)
     standard_error <- sqrt(var)
 
     relative_change <- DeltaMethodForRatio$compute_expected_value(
       diff, mean_c, var_c, cov = 0, order_of_Taylor = order_of_Taylor)
-    z_score <- relative_change / standard_error
+    z_score <- c("z" = relative_change / standard_error)
 
     lower <- relative_change - qnorm(0.975) * standard_error
     upper <- relative_change + qnorm(0.975) * standard_error
@@ -53,7 +53,6 @@ test_with_delta <- function(numer_c, denom_c, numer_t, denom_t,
     null_value <- c("relative change in means between control and treatment" = 0)
   }
 
-  names(z_score) <- "z"
   p_value <- 2 * pnorm(-abs(z_score))
   conf_int <- c(lower, upper)
   attr(conf_int, "conf.level") <- 0.95
