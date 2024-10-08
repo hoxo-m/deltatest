@@ -53,7 +53,7 @@ deltatest <- function(numer_c, denom_c, numer_t, denom_t,
     null_value <- c("relative change in means between control and treatment" = 0)
   }
 
-  p_value <- 2 * pnorm(-abs(z_score))
+  p_value <- unname(2 * pnorm(-abs(z_score)))
   conf_int <- c(lower, upper)
   attr(conf_int, "conf.level") <- 0.95
   data_name <- paste0(
