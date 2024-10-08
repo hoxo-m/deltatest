@@ -1,14 +1,9 @@
-#' @export
-deltatest <- function(numer_c, denom_c, numer_t, denom_t, type, order_of_Taylor) {
-  UseMethod("deltatest")
-}
-
 #' @importFrom stats pnorm qnorm
 #'
 #' @export
-deltatest.default <- function(numer_c, denom_c, numer_t, denom_t,
-                              type = c("difference", "relative_change"),
-                              order_of_Taylor = c("1", "2")) {
+deltatest <- function(numer_c, denom_c, numer_t, denom_t,
+                      type = c("difference", "relative_change"),
+                      order_of_Taylor = c("1", "2")) {
   # check arguments
   stopifnot(length(numer_c) == length(denom_c))
   stopifnot(length(numer_t) == length(denom_t))
@@ -73,4 +68,34 @@ deltatest.default <- function(numer_c, denom_c, numer_t, denom_t,
                  data.name = data_name, se = sqrt(c(var_c / n_c, var_t / n_t)))
   class(result) <- "htest"
   result
+}
+
+
+
+#' @importFrom rlang as_label as_string enquo ensym
+#'
+#' @export
+deltatest_df <- function(df, numer_col, denom_col, bucket_col = "bucket",
+                         type = c("difference", "relative_change"),
+                         order_of_Taylor = c("1", "2")) {
+  data_name <- rlang::enquo(df)|> rlang::as_label()
+  numer_col <- rlang::ensym(numer_col) |> rlang::as_string()
+  denom_col <- rlang::ensym(denom_col) |> rlang::as_string()
+  bucket_col <- rlang::ensym(bucket_col) |> rlang::as_string()
+  df_split <- split_control_treatment(df, bucket_col)
+  df_c <- df_split$control
+  df_t <- df_split$treatment
+  result <- deltatest(df_c[[numer_col]], df_c[[denom_col]],
+                      df_t[[numer_col]], df_t[[denom_col]],
+                      type = type, order_of_Taylor = order_of_Taylor)
+  result$data.name <- data_name
+  result
+}
+
+#' @importFrom glue glue
+split_control_treatment <- function(df, bucket_col) {
+  df_split <- split(df, df[[bucket_col]])
+  names <- sort(names(df_split))
+  message(glue("control: {names[1]}, treatment: {names[2]}"))
+  list(control = df_split[[names[1]]], treatment = df_split[[names[1]]])
 }
