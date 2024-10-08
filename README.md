@@ -4,6 +4,7 @@
 # deltatest
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 ## Installation
@@ -27,11 +28,11 @@ set.seed(314)
 df_c <- generate_dummy_data(n_user)
 df_t <- generate_dummy_data(n_user)
 
-deltatest(df_c$click, df_c$imp, df_t$click, df_t$imp)
+deltatest(df_c$click, df_c$view, df_t$click, df_t$view)
 #> 
 #>  Two Sample z-test with Delta Method
 #> 
-#> data:  (df_c$click, df_c$imp) and (df_t$click, df_t$imp)
+#> data:  (df_c$click, df_c$view) and (df_t$click, df_t$view)
 #> z = -0.73363, p-value = 0.4632
 #> alternative hypothesis: true difference in means between control and treatment is not equal to 0
 #> 95 percent confidence interval:
@@ -50,7 +51,7 @@ for (i in 1:5000) {
   df_t <- generate_dummy_data(n_user)
   
   x <- rbind(colSums(df_c), colSums(df_t)) |> data.frame()
-  result <- prop.test(x$click, x$imp, correct = FALSE)
+  result <- prop.test(x$click, x$view, correct = FALSE)
   
   p_values[i] <- result$p.value
 }
@@ -79,7 +80,7 @@ for (i in 1:5000) {
   df_c <- generate_dummy_data(n_user)
   df_t <- generate_dummy_data(n_user)
   
-  result <- deltatest(df_c$click, df_c$imp, df_t$click, df_t$imp)
+  result <- deltatest(df_c$click, df_c$view, df_t$click, df_t$view)
   
   p_values[i] <- result$p.value
 }
