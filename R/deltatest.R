@@ -2,6 +2,7 @@
 #'
 #' @export
 deltatest <- function(numer_c, denom_c, numer_t, denom_t,
+                      bucket_names = c("control", "treatment"),
                       type = c("difference", "relative_change"),
                       order_of_Taylor = c("1", "2")) {
   # check arguments
@@ -61,11 +62,16 @@ deltatest <- function(numer_c, denom_c, numer_t, denom_t,
     ") and (",
     deparse1(substitute(numer_t)), ", ", deparse1(substitute(denom_t)), ")")
 
+  se <- sqrt(c(var_c / n_c, var_t / n_t))
+  df <- tibble(bucket = bucket_names,
+               x = c(sum(numer_c), sum(numer_t)), n = c(n_c, n_t),
+               mean = c(mean_c, mean_t), lower = mean - se, upper = mean + se)
+
   result <- list(statistic = z_score, p.value = p_value, conf.int = conf_int,
                  estimate = estimate, null.value = null_value,
                  stderr = standard_error, alternative = "two.sided",
                  method = "Two Sample z-test with Delta Method",
-                 data.name = data_name, se = sqrt(c(var_c / n_c, var_t / n_t)))
+                 data.name = data_name, df = df)
   class(result) <- "htest"
   result
 }
@@ -76,6 +82,7 @@ deltatest <- function(numer_c, denom_c, numer_t, denom_t,
 #'
 #' @export
 deltatest_df <- function(df, numer_col, denom_col, bucket_col = "bucket",
+                         bucket_names = "auto",
                          type = c("difference", "relative_change"),
                          order_of_Taylor = c("1", "2")) {
   data_name <- rlang::enquo(df)|> rlang::as_label()
@@ -83,10 +90,11 @@ deltatest_df <- function(df, numer_col, denom_col, bucket_col = "bucket",
   denom_col <- rlang::ensym(denom_col) |> rlang::as_string()
   bucket_col <- rlang::ensym(bucket_col) |> rlang::as_string()
   df_split <- split_control_treatment(df, bucket_col)
-  df_c <- df_split$control
-  df_t <- df_split$treatment
+  df_c <- df_split[[1]]
+  df_t <- df_split[[2]]
   result <- deltatest(df_c[[numer_col]], df_c[[denom_col]],
                       df_t[[numer_col]], df_t[[denom_col]],
+                      bucket_names = names(df_split),
                       type = type, order_of_Taylor = order_of_Taylor)
   result$data.name <- data_name
   result
@@ -97,5 +105,5 @@ split_control_treatment <- function(df, bucket_col) {
   df_split <- split(df, df[[bucket_col]])
   names <- sort(names(df_split))
   message(glue("control: {names[1]}, treatment: {names[2]}"))
-  list(control = df_split[[names[1]]], treatment = df_split[[names[1]]])
+  df_split[names]
 }
