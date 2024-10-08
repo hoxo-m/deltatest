@@ -1,4 +1,5 @@
 #' @importFrom stats rbeta rpois rbinom
+#' @importFrom tibble tibble
 #'
 #' @export
 generate_dummy_data <- function(n_user, shape1 = 0.2, shape2 = 5, lambda = 0.5) {
