@@ -71,7 +71,7 @@ deltatest <- function(numer_c, denom_c, numer_t, denom_t,
                  estimate = estimate, null.value = null_value,
                  stderr = standard_error, alternative = "two.sided",
                  method = "Two Sample z-test with Delta Method",
-                 data.name = data_name, df = df)
+                 data.name = data_name, df = df, se = sqrt(c(var_c / n_c, var_t / n_t)))
   class(result) <- "htest"
   result
 }
