@@ -64,7 +64,7 @@ deltatest <- function(numer_c, denom_c, numer_t, denom_t,
 
   se <- sqrt(c(var_c / n_c, var_t / n_t))
   df <- tibble(bucket = bucket_names,
-               x = c(sum(numer_c), sum(numer_t)), n = c(n_c, n_t),
+               x = c(sum(numer_c), sum(numer_t)), n = c(sum(denom_c), sum(denom_t)),
                mean = c(mean_c, mean_t), lower = mean - se, upper = mean + se)
 
   result <- list(statistic = z_score, p.value = p_value, conf.int = conf_int,
