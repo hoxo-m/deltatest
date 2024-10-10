@@ -62,16 +62,16 @@ deltatest <- function(numer_c, denom_c, numer_t, denom_t,
     ") and (",
     deparse1(substitute(numer_t)), ", ", deparse1(substitute(denom_t)), ")")
 
-  se <- sqrt(c(var_c / n_c, var_t / n_t))
+  se2 <- qnorm(0.975) * sqrt(c(var_c / n_c, var_t / n_t))
   df <- tibble(bucket = bucket_names,
                x = c(sum(numer_c), sum(numer_t)), n = c(sum(denom_c), sum(denom_t)),
-               mean = c(mean_c, mean_t), lower = mean - se, upper = mean + se)
+               mean = c(mean_c, mean_t), lower = mean - se2, upper = mean + se2)
 
   result <- list(statistic = z_score, p.value = p_value, conf.int = conf_int,
                  estimate = estimate, null.value = null_value,
                  stderr = standard_error, alternative = "two.sided",
                  method = "Two Sample z-test with Delta Method",
-                 data.name = data_name, df = df, se = sqrt(c(var_c / n_c, var_t / n_t)))
+                 data.name = data_name, df = df)
   class(result) <- "htest"
   result
 }
