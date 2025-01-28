@@ -20,44 +20,62 @@ remotes::install_github("hoxo-m/deltatest")
 ## Example
 
 ``` r
+library(dplyr)
 library(deltatest)
 
 n_user <- 2000
 
 set.seed(314)
-df_c <- generate_dummy_data(n_user)
-df_t <- generate_dummy_data(n_user)
+df <- generate_dummy_data(n_user) |> 
+  mutate(group = if_else(group == 0L, "control", "treatment")) |>
+  group_by(user_id, group) |> 
+  summarise(click = sum(metric), pageview = n(), .groups = "drop")
+df
+#> # A tibble: 2,000 × 4
+#>    user_id group     click pageview
+#>      <int> <chr>     <int>    <int>
+#>  1       1 treatment     1        6
+#>  2       2 treatment     2       11
+#>  3       3 control       0       17
+#>  4       4 control       4       12
+#>  5       5 control       5       10
+#>  6       6 control       1       15
+#>  7       7 control       2        6
+#>  8       8 treatment     2       11
+#>  9       9 treatment     2       16
+#> 10      10 control       0       17
+#> # ℹ 1,990 more rows
 
-deltatest(df_c$click, df_c$view, df_t$click, df_t$view)
+deltatest(df, click / pageview, by = group)
 #> 
-#>  Two Sample z-test with Delta Method
+#>  Two Sample Z-test Using the Delta Method
 #> 
-#> data:  (df_c$click, df_c$view) and (df_t$click, df_t$view)
-#> z = -0.73363, p-value = 0.4632
+#> data:  click/pageview by group
+#> z = 0.89707, p-value = 0.3697
 #> alternative hypothesis: true difference in means between control and treatment is not equal to 0
 #> 95 percent confidence interval:
-#>  -0.014773163  0.006725915
+#>  -0.009110998  0.024490289
 #> sample estimates:
 #>   mean in control mean in treatment        difference 
-#>       0.043317663       0.039294039      -0.004023624
+#>       0.241848567       0.249538212       0.007689645
 ```
 
 ``` r
+library(ggplot2)
+
 set.seed(314)
 
 p_values <- NULL
 for (i in 1:5000) {
-  df_c <- generate_dummy_data(n_user)
-  df_t <- generate_dummy_data(n_user)
+  df <- generate_dummy_data(n_user) |> 
+    group_by(group) |> 
+    summarise(click = sum(metric), pageview = n(), .groups = "drop")
   
-  x <- rbind(colSums(df_c), colSums(df_t)) |> data.frame()
-  result <- prop.test(x$click, x$view, correct = FALSE)
+  result <- prop.test(df$click, df$pageview, correct = FALSE)
   
   p_values[i] <- result$p.value
 }
 
-library(ggplot2)
-library(dplyr)
 df <- data.frame(p_value = p_values) |>
   mutate(range = cut(p_value, breaks = seq(0, 1, by = 0.05))) |>
   group_by(range) |>
@@ -66,7 +84,7 @@ df <- data.frame(p_value = p_values) |>
 ggplot(df, aes(p, prop)) +
   geom_col() +
   geom_hline(yintercept = 0.05, color = "red") +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.01), minor_breaks = NULL) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.02), minor_breaks = NULL) +
   xlab("p-value") + ylab("proportion")
 ```
 
@@ -77,16 +95,15 @@ set.seed(314)
 
 p_values <- NULL
 for (i in 1:5000) {
-  df_c <- generate_dummy_data(n_user)
-  df_t <- generate_dummy_data(n_user)
+  df <- generate_dummy_data(n_user) |> 
+    group_by(user_id, group) |> 
+    summarise(click = sum(metric), pageview = n(), .groups = "drop")
   
-  result <- deltatest(df_c$click, df_c$view, df_t$click, df_t$view)
+  result <- deltatest(df, click / pageview, by = group)
   
   p_values[i] <- result$p.value
 }
 
-library(ggplot2)
-library(dplyr)
 df <- data.frame(p_value = p_values) |>
   mutate(range = cut(p_value, breaks = seq(0, 1, by = 0.05))) |>
   group_by(range) |>

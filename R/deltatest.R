@@ -1,53 +1,158 @@
-#' @importFrom stats pnorm qnorm
+#' @importFrom glue glue
 #'
 #' @export
-deltatest <- function(numer_c, denom_c, numer_t, denom_t,
-                      bucket_names = c("control", "treatment"),
+deltatest <- function(data, formula, by = "group", group_names = "auto",
                       type = c("difference", "relative_change"),
-                      order_of_Taylor = c("1", "2")) {
+                      bias_correction = TRUE,
+                      alternative = c("two.sided", "less", "greater"),
+                      conf.level = 0.95, na.rm = FALSE, quiet = FALSE) {
+  # check arguments ---------------------------------------------------------
+  data <- as.data.frame(data)
+  if (missing(formula)) {
+    stop("The 'formula' argument is required but missing. Use the format 'numerator/denominator ~ group', e.g., click/pageview ~ group.")
+  }
+  group_names <- as.character(group_names)
+  type <- match.arg(type)
+  bias_correction <- as.logical(bias_correction)
+  alternative <- match.arg(alternative)
+  conf.level <- as.double(conf.level)
+  na.rm <- as.logical(na.rm)
+
+  # NSE (non-standard evaluation): formula = y / x
+  metric_call <- rlang::enexpr(formula)
+  group_call <- rlang::ensym(by)
+
+  if (!rlang::is_call(metric_call, name = "/", n = 2L)) {
+    # standard evaluation
+    if (rlang::is_formula(formula, lhs = TRUE)) {
+      # standard formula: y / x ~ group
+      metric_call <- rlang::call_args(formula)[[1L]]
+      group_call <- rlang::call_args(formula)[[2L]]
+    } else if (rlang::is_formula(formula, lhs = FALSE)) {
+      # lambda formula: ~ y / x
+      formula_quosure <- rlang::as_quosure(formula)
+      metric_call <- rlang::quo_get_expr(formula_quosure)
+    } else if (rlang::is_call(formula, name = "/", n = 2L)) {
+      # formula = quote(y / x)
+      metric_call <- formula
+    }
+  }
+
+  group_col <- rlang::as_string(group_call)
+
+  # check 'formula'
+  if (!rlang::is_call(metric_call, name = "/", n = 2L)) {
+    stop("The 'formula' argument is incorrect. Use the format 'numerator/denominator ~ group', e.g., click/pageview ~ group.")
+  }
+
+  literals <- c(extract_all_literals(metric_call), group_col)
+  absent_literals <- literals[!literals %in% ls(data)]
+  if (length(absent_literals) > 0L) {
+    absent_literals <- paste0("'", absent_literals, "'", collapse = ", ")
+    stop(glue("The 'formula' argument is incorrect. Column {absent_literals} is not found in the data."))
+  }
+
+  # format 'data' -----------------------------------------------------------
+  data_name <- paste(rlang::as_label(metric_call), "by", group_col)
+  numer_call <- rlang::call_args(metric_call)[[1L]]
+  denom_call <- rlang::call_args(metric_call)[[2L]]
+
+  if (!rlang::is_symbol(numer_call)) {
+    data$numer <- eval(numer_call, data)
+    numer_call <- quote(numer)
+  }
+  if (!rlang::is_symbol(denom_call)) {
+    data$denom <- eval(denom_call, data)
+    denom_call <- quote(denom)
+  }
+
+  numer_col <- rlang::as_string(numer_call)
+  denom_col <- rlang::as_string(denom_call)
+
+  data <- data[c(numer_col, denom_col, group_col)]
+  if (na.rm) {
+    data <- data[complete.cases(data), ]
+  }
+
+  # execute Z-test using the Delta method -----------------------------------
+  data_split <- split_control_treatment(data, group_col, group_names, quiet)
+  group_names <- names(data_split)
+  data_c <- data_split[[1L]]
+  data_t <- data_split[[2L]]
+  result <- deltatest_impl(data_c[[numer_col]], data_c[[denom_col]],
+                           data_t[[numer_col]], data_t[[denom_col]],
+                           type = type, bias_correction = bias_correction,
+                           alternative = alternative, conf.level = conf.level)
+  result$data.name <- data_name
+  result$info <- cbind(group = group_names, result$info)
+  names(result$info)[1] <- group_col
+  result
+}
+
+extract_all_literals <- function(call) {
+  if (rlang::is_symbol(call)) {
+    as.character(call)
+  } else if (rlang::is_call(call)) {
+    unique(unlist(lapply(rlang::call_args(call), extract_all_literals)))
+  } else {
+    NULL
+  }
+}
+
+#' @importFrom glue glue
+split_control_treatment <- function(df, group_col, group_names, quiet) {
+  df_split <- split(df, df[[group_col]])
+  if (length(group_names) == 1L && group_names == "auto") {
+    group_names <- sort(names(df_split))
+    if (!quiet) {
+      message(glue("control: {group_names[1]}, treatment: {group_names[2]}"))
+    }
+  }
+  df_split[group_names]
+}
+
+#' @importFrom stats pnorm
+deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
+                           type, bias_correction, alternative, conf.level) {
   # check arguments
   stopifnot(length(numer_c) == length(denom_c))
   stopifnot(length(numer_t) == length(denom_t))
-  type <- match.arg(type)
-  order_of_Taylor <- as.character(order_of_Taylor)
-  order_of_Taylor <- match.arg(order_of_Taylor)
-
-  n_c <- length(numer_c)
-  n_t <- length(numer_t)
 
   delta_method_c <- DeltaMethodForRatio$new(numer_c, denom_c)
   delta_method_t <- DeltaMethodForRatio$new(numer_t, denom_t)
 
-  mean_c <- delta_method_c$get_expected_value(order_of_Taylor = order_of_Taylor)
-  mean_t <- delta_method_t$get_expected_value(order_of_Taylor = order_of_Taylor)
+  mean_c <- delta_method_c$get_expected_value(bias_correction = bias_correction)
+  mean_t <- delta_method_t$get_expected_value(bias_correction = bias_correction)
 
-  var_c <- delta_method_c$get_variance()
-  var_t <- delta_method_t$get_variance()
-
-  var_of_diff <- var_c / n_c + var_t / n_t
-  standard_error <- sqrt(var_of_diff)
-
-  diff <- mean_t - mean_c
+  squared_SE_c <- delta_method_c$get_squared_standard_error()
+  squared_SE_t <- delta_method_t$get_squared_standard_error()
 
   if (type == "difference") {
+    squared_SE_of_diff <- squared_SE_c + squared_SE_t
+    standard_error <- sqrt(squared_SE_of_diff)
+
+    diff <- mean_t - mean_c
+
     z_score <- c("z" = diff / standard_error)
 
-    lower <- diff - qnorm(0.975) * standard_error
-    upper <- diff + qnorm(0.975) * standard_error
+    confidence_interval <- compute_confidence_interval(
+      diff, standard_error, alternative, conf.level)
 
     estimate <- c("mean in control" = mean_c, "mean in treatment" = mean_t,
                   "difference" = diff)
     null_value <- c("difference in means between control and treatment" = 0)
   } else {  # relative change
-    var <- DeltaMethodForRatio$compute_variance(diff, mean_c, var_of_diff, var_c / n_c)
-    standard_error <- sqrt(var)
+    squared_SE_of_relative_change <- DeltaMethodForRatio$compute_variance(
+      mean_t, mean_c, squared_SE_t, squared_SE_c)
+    standard_error <- sqrt(squared_SE_of_relative_change)
 
     relative_change <- DeltaMethodForRatio$compute_expected_value(
-      diff, mean_c, var_c, cov = 0, order_of_Taylor = order_of_Taylor)
-    z_score <- c("z" = relative_change / standard_error)
+      mean_t, mean_c, squared_SE_c, cov = 0, bias_correction = bias_correction)
 
-    lower <- relative_change - qnorm(0.975) * standard_error
-    upper <- relative_change + qnorm(0.975) * standard_error
+    z_score <- c("z" = (relative_change - 1) / standard_error)
+
+    confidence_interval <- compute_confidence_interval(
+      relative_change, standard_error, alternative, conf.level)
 
     estimate <- c("mean in control" = mean_c, "mean in treatment" = mean_t,
                   "relative change" = relative_change)
@@ -55,55 +160,39 @@ deltatest <- function(numer_c, denom_c, numer_t, denom_t,
   }
 
   p_value <- unname(2 * pnorm(-abs(z_score)))
-  conf_int <- c(lower, upper)
-  attr(conf_int, "conf.level") <- 0.95
-  data_name <- paste0(
-    "(", deparse1(substitute(numer_c)), ", ", deparse1(substitute(denom_c)),
-    ") and (",
-    deparse1(substitute(numer_t)), ", ", deparse1(substitute(denom_t)), ")")
 
-  se2 <- qnorm(0.975) * sqrt(c(var_c / n_c, var_t / n_t))
-  df <- tibble(bucket = bucket_names,
-               x = c(sum(numer_c), sum(numer_t)), n = c(sum(denom_c), sum(denom_t)),
-               mean = c(mean_c, mean_t), lower = mean - se2, upper = mean + se2)
+  se_c <- sqrt(squared_SE_c)
+  se_t <- sqrt(squared_SE_t)
+  ci_c <- compute_confidence_interval(mean_c, se_c, alternative, conf.level)
+  ci_t <- compute_confidence_interval(mean_t, se_t, alternative, conf.level)
 
-  result <- list(statistic = z_score, p.value = p_value, conf.int = conf_int,
+  info <- rbind(delta_method_c$get_info(), delta_method_t$get_info())
+
+  result <- list(statistic = z_score, p.value = p_value, conf.int = confidence_interval,
                  estimate = estimate, null.value = null_value,
-                 stderr = standard_error, alternative = "two.sided",
-                 method = "Two Sample z-test with Delta Method",
-                 data.name = data_name, df = df)
-  class(result) <- "htest"
+                 stderr = standard_error, alternative = alternative,
+                 method = "Two Sample Z-test Using the Delta Method",
+                 info = info)
+  class(result) <- c("deltatest", "htest")
   result
 }
 
-
-
-#' @importFrom rlang as_label as_string enquo ensym
-#'
-#' @export
-deltatest_df <- function(df, numer_col, denom_col, bucket_col = "bucket",
-                         bucket_names = "auto",
-                         type = c("difference", "relative_change"),
-                         order_of_Taylor = c("1", "2")) {
-  data_name <- rlang::enquo(df)|> rlang::as_label()
-  numer_col <- rlang::ensym(numer_col) |> rlang::as_string()
-  denom_col <- rlang::ensym(denom_col) |> rlang::as_string()
-  bucket_col <- rlang::ensym(bucket_col) |> rlang::as_string()
-  df_split <- split_control_treatment(df, bucket_col)
-  df_c <- df_split[[1]]
-  df_t <- df_split[[2]]
-  result <- deltatest(df_c[[numer_col]], df_c[[denom_col]],
-                      df_t[[numer_col]], df_t[[denom_col]],
-                      bucket_names = names(df_split),
-                      type = type, order_of_Taylor = order_of_Taylor)
-  result$data.name <- data_name
-  result
-}
-
-#' @importFrom glue glue
-split_control_treatment <- function(df, bucket_col) {
-  df_split <- split(df, df[[bucket_col]])
-  names <- sort(names(df_split))
-  message(glue("control: {names[1]}, treatment: {names[2]}"))
-  df_split[names]
+#' @importFrom stats qnorm
+compute_confidence_interval <- function(estimate, standard_error, alternative, conf.level) {
+  if (alternative == "two.sided") {
+    p <- 1 - (1 - conf.level) / 2
+    lower <- estimate - qnorm(p) * standard_error
+    upper <- estimate + qnorm(p) * standard_error
+  } else if (alternative == "less") {
+    p <- conf.level
+    lower <- -Inf
+    upper <- estimate + qnorm(p) * standard_error
+  } else {
+    p <- conf.level
+    lower <- estimate - qnorm(p) * standard_error
+    upper <- Inf
+  }
+  confidence_interval <- c(lower, upper)
+  attr(confidence_interval, "conf.level") <- conf.level
+  confidence_interval
 }

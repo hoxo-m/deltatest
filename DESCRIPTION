@@ -1,17 +1,22 @@
-Package: deltatest
 Type: Package
-Title: Statistical Hypothesis Test with Delta Method
-Version: 0.0.0.9000
+Package: deltatest
+Title: Statistical Hypothesis Test Using the Delta Method
+Version: 0.0.0.9001
 Authors@R:
-    person("Koji", "Makiyama", , "hoxo.smile@gmail.com", c("aut", "cre"))
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+    person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre"))
+Description: Statistical hypothesis test using the Delta method for online A/B tests.
+License: file LICENSE
+Depends: 
+    R (>= 4.1.0)
 Imports:
-    R6,
     glue,
+    R6,
     rlang,
     stats,
     tibble
+Suggests: 
+    dplyr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.3.2
