@@ -1,4 +1,4 @@
-
+# set up ------------------------------------------------------------------
 n_user <- 100
 
 set.seed(314)
@@ -23,15 +23,8 @@ expected_result <- structure(list(
   data.name = "click/pageview by group"
 ), class = c("deltatest", "htest"))
 
-test_that("deltatest works", {
-  expected_conf.int <- c(-0.12688957, 0.02009432)
-  attr(expected_conf.int, "conf.level") <- 0.95
 
-  act <- deltatest(df, click / pageview ~ group, quiet = TRUE)
-  act$info <- NULL
-  expect_equal(act, expected_result, tolerance = 1e-7)
-})
-
+# formula -----------------------------------------------------------------
 test_that("standard formula works", {
   act <- deltatest(df, click / pageview ~ group, quiet = TRUE)
   act$info <- NULL
@@ -88,7 +81,7 @@ test_that("formula is incorrect; NSE", {
 
 test_that("formula is incorrect; absent cloumn name", {
   expect_error(deltatest(df, x / y ~ group),
-               "The 'formula' argument is incorrect. Column 'x', 'y'")
+               "The 'formula' or 'by' argument is incorrect. Column 'x', 'y'")
 })
 
 test_that("formula contains calculation", {
@@ -96,4 +89,55 @@ test_that("formula contains calculation", {
   act <- deltatest(df_posneg, pos / (pos + neg) ~ group, quiet = TRUE)
   act$info <- NULL
   expect_equal(act, expected_result, tolerance = 1e-7)
+})
+
+
+# by ----------------------------------------------------------------------
+df_bucket <- df |> dplyr::rename(bucket = group)
+expected_result_bucket <- expected_result
+expected_result_bucket$data.name <- "click/pageview by bucket"
+
+test_that("'by' argument works; NSE", {
+  act <- deltatest(df_bucket, click / pageview, by = bucket, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+})
+
+test_that("'by' argument works; character", {
+  act <- deltatest(df_bucket, click / pageview, by = "bucket", quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+})
+
+test_that("'by' argument works; variable", {
+  group_col <- "bucket"
+  act <- deltatest(df_bucket, click / pageview, by = group_col, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+})
+
+test_that("'by' argument works; variable is ignored", {
+  bucket <- "x"
+  act <- deltatest(df_bucket, click / pageview, by = bucket, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+})
+
+test_that("'by' argument is incorrect", {
+  expect_error(deltatest(df_bucket, click / pageview, by = x, quiet = TRUE),
+               "The 'formula' or 'by' argument is incorrect. Column 'x'")
+})
+
+test_that("'by' argument is ambiguous", {
+  df_bucket$group <- df_bucket$bucket
+  bucket <- "group"
+  expect_error(deltatest(df_bucket, click / pageview, by = bucket, quiet = TRUE),
+               "The 'by' argument is ambiguous.")
+})
+
+test_that("'by' argument is ambiguous; special case", {
+  bucket <- "bucket"
+  act <- deltatest(df_bucket, click / pageview, by = bucket, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
 })

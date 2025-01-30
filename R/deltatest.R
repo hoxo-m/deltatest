@@ -22,12 +22,14 @@ deltatest <- function(data, formula, by = "group", group_names = "auto",
   metric_call <- rlang::enexpr(formula)
   group_call <- rlang::ensym(by)
 
+  by_argument_required <- TRUE
   if (!rlang::is_call(metric_call, name = "/", n = 2L)) {
     # standard evaluation
     if (rlang::is_formula(formula, lhs = TRUE)) {
       # standard formula: y / x ~ group
       metric_call <- rlang::call_args(formula)[[1L]]
       group_call <- rlang::call_args(formula)[[2L]]
+      by_argument_required  <- FALSE
     } else if (rlang::is_formula(formula, lhs = FALSE)) {
       # lambda formula: ~ y / x
       formula_quosure <- rlang::as_quosure(formula)
@@ -40,6 +42,20 @@ deltatest <- function(data, formula, by = "group", group_names = "auto",
 
   group_col <- rlang::as_string(group_call)
 
+  if (by_argument_required) {
+    # check 'by'
+    if (group_col %in% ls(parent.frame())) {
+      group_col_in_parent <- eval(group_call, parent.frame())
+      if (group_col_in_parent %in% ls(data) && group_col %in% ls(data)) {
+        if (group_col_in_parent != group_col) {
+          stop(glue("The 'by' argument is ambiguous. '{group_col}' could either be a column in 'data' or a variable. If it is a variable, it specifies the '{group_col_in_parent}' column."))
+        }
+      } else if (!group_col %in% ls(data)) {
+        group_col <- group_col_in_parent
+      }
+    }
+  }
+
   # check 'formula'
   if (!rlang::is_call(metric_call, name = "/", n = 2L)) {
     stop("The 'formula' argument is incorrect. Use the format 'numerator/denominator ~ group', e.g., click/pageview ~ group.")
@@ -49,7 +65,7 @@ deltatest <- function(data, formula, by = "group", group_names = "auto",
   absent_literals <- literals[!literals %in% ls(data)]
   if (length(absent_literals) > 0L) {
     absent_literals <- paste0("'", absent_literals, "'", collapse = ", ")
-    stop(glue("The 'formula' argument is incorrect. Column {absent_literals} is not found in the data."))
+    stop(glue("The 'formula' or 'by' argument is incorrect. Column {absent_literals} is not found in the data."))
   }
 
   # format 'data' -----------------------------------------------------------
