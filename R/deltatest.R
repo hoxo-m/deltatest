@@ -118,11 +118,11 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
   stopifnot(length(numer_c) == length(denom_c))
   stopifnot(length(numer_t) == length(denom_t))
 
-  delta_method_c <- DeltaMethodForRatio$new(numer_c, denom_c)
-  delta_method_t <- DeltaMethodForRatio$new(numer_t, denom_t)
+  delta_method_c <- DeltaMethodForRatio$new(numer_c, denom_c, bias_correction)
+  delta_method_t <- DeltaMethodForRatio$new(numer_t, denom_t, bias_correction)
 
-  mean_c <- delta_method_c$get_expected_value(bias_correction = bias_correction)
-  mean_t <- delta_method_t$get_expected_value(bias_correction = bias_correction)
+  mean_c <- delta_method_c$get_expected_value()
+  mean_t <- delta_method_t$get_expected_value()
 
   squared_SE_c <- delta_method_c$get_squared_standard_error()
   squared_SE_t <- delta_method_t$get_squared_standard_error()
@@ -135,7 +135,7 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
 
     z_score <- c("z" = diff / standard_error)
 
-    confidence_interval <- compute_confidence_interval(
+    confidence_interval <- DeltaMethodForRatio$compute_confidence_interval(
       diff, standard_error, alternative, conf.level)
 
     estimate <- c("mean in control" = mean_c, "mean in treatment" = mean_t,
@@ -151,7 +151,7 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
 
     z_score <- c("z" = (relative_change - 1) / standard_error)
 
-    confidence_interval <- compute_confidence_interval(
+    confidence_interval <- DeltaMethodForRatio$compute_confidence_interval(
       relative_change, standard_error, alternative, conf.level)
 
     estimate <- c("mean in control" = mean_c, "mean in treatment" = mean_t,
@@ -161,12 +161,10 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
 
   p_value <- unname(2 * pnorm(-abs(z_score)))
 
-  se_c <- sqrt(squared_SE_c)
-  se_t <- sqrt(squared_SE_t)
-  ci_c <- compute_confidence_interval(mean_c, se_c, alternative, conf.level)
-  ci_t <- compute_confidence_interval(mean_t, se_t, alternative, conf.level)
-
-  info <- rbind(delta_method_c$get_info(), delta_method_t$get_info())
+  info <- rbind(
+    delta_method_c$get_info(alternative = alternative, conf_level = conf.level),
+    delta_method_t$get_info(alternative = alternative, conf_level = conf.level)
+  )
 
   result <- list(statistic = z_score, p.value = p_value, conf.int = confidence_interval,
                  estimate = estimate, null.value = null_value,
@@ -175,24 +173,4 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
                  info = info)
   class(result) <- c("deltatest", "htest")
   result
-}
-
-#' @importFrom stats qnorm
-compute_confidence_interval <- function(estimate, standard_error, alternative, conf.level) {
-  if (alternative == "two.sided") {
-    p <- 1 - (1 - conf.level) / 2
-    lower <- estimate - qnorm(p) * standard_error
-    upper <- estimate + qnorm(p) * standard_error
-  } else if (alternative == "less") {
-    p <- conf.level
-    lower <- -Inf
-    upper <- estimate + qnorm(p) * standard_error
-  } else {
-    p <- conf.level
-    lower <- estimate - qnorm(p) * standard_error
-    upper <- Inf
-  }
-  confidence_interval <- c(lower, upper)
-  attr(confidence_interval, "conf.level") <- conf.level
-  confidence_interval
 }
