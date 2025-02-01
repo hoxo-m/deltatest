@@ -208,7 +208,7 @@ test_that("'bias_correction' = TRUE", {
 })
 
 test_that("'bias_correction' = FALSE", {
-  expected_result$statistic <- c("z" = -1.24156594)
+  expected_result$statistic <- c(z = -1.24156594)
   expected_result$p.value <- 0.214396755
   expected_result$conf.int <- structure(c(-0.120046420, 0.026937469), conf.level = 0.95)
   expected_result$estimate <- c("mean in control" = 0.234960272, "mean in treatment" = 0.188405797, "difference" = -0.046554475)
@@ -227,7 +227,7 @@ test_that("'alternative' = 'two.sided", {
 })
 
 test_that("'alternative' = 'less", {
-  expected_result$statistic <- c("z" = -1.4240665)
+  expected_result$statistic <- c(z = -1.4240665)
   expected_result$p.value <- 0.15442723
   expected_result$conf.int <- structure(c(-Inf, 0.0082787626), conf.level = 0.95)
   expected_result$alternative <- "less"
@@ -238,7 +238,7 @@ test_that("'alternative' = 'less", {
 })
 
 test_that("'alternative' = 'greater", {
-  expected_result$statistic <- c("z" = -1.4240665)
+  expected_result$statistic <- c(z = -1.4240665)
   expected_result$p.value <- 0.15442723
   expected_result$conf.int <- structure(c(-0.115074005, Inf), conf.level = 0.95)
   expected_result$alternative <- "greater"
@@ -289,23 +289,42 @@ test_that("'conf.level' = 1", {
 })
 
 test_that("'conf.level' is invalid", {
-  testthat::expect_error({
+  expect_error({
     deltatest(df, click / pageview ~ group, conf.level = -0.1, quiet = TRUE)
   }, "The 'conf.level' argument must be a single number between 0 and 1")
 
-  testthat::expect_error({
+  expect_error({
     deltatest(df, click / pageview ~ group, conf.level = 1.1, quiet = TRUE)
   }, "The 'conf.level' argument must be a single number between 0 and 1")
 
-  testthat::expect_error({
+  expect_error({
     deltatest(df, click / pageview ~ group, conf.level = -Inf, quiet = TRUE)
   }, "The 'conf.level' argument must be a single number between 0 and 1")
 
-  testthat::expect_error({
+  expect_error({
     deltatest(df, click / pageview ~ group, conf.level = Inf, quiet = TRUE)
   }, "The 'conf.level' argument must be a single number between 0 and 1")
 
-  testthat::expect_error({
+  expect_error({
     deltatest(df, click / pageview ~ group, conf.level = NA, quiet = TRUE)
   }, "The 'conf.level' argument must be a single number between 0 and 1")
 })
+
+
+# na.rm -------------------------------------------------------------------
+df_na <- df
+df_na[1, "click"] <- NA
+
+test_that("'na.rm' works", {
+  expected <- deltatest(df_na[-1, ], click / pageview ~ group, na.rm = TRUE, quiet = TRUE)
+  act <- deltatest(df_na, click / pageview ~ group, na.rm = TRUE, quiet = TRUE)
+
+  expect_equal(act, expected)
+})
+
+test_that("'na.rm' = FALSE with NA", {
+  testthat::expect_error({
+    deltatest(df_na, click / pageview ~ group, na.rm = FALSE, quiet = TRUE)
+  }, "NA value is found in the data at row number 1.")
+})
+

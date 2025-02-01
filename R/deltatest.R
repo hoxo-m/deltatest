@@ -104,8 +104,12 @@ deltatest <- function(data, formula, by, group_names = "auto",
   denom_col <- rlang::as_string(denom_call)
 
   data <- data[c(numer_col, denom_col, group_col)]
+  comlete_cases <- complete.cases(data)
   if (na.rm) {
-    data <- data[complete.cases(data), ]
+    data <- data[comlete_cases, ]
+  } else if (!all(comlete_cases)) {
+    na_row_number <- which(!comlete_cases)[1]
+    stop(glue("NA value is found in the data at row number {na_row_number}. By setting the 'na.rm' argument to 'TRUE', you can remove it from the data and proceed with execution."))
   }
 
   # execute Z-test using the Delta method -----------------------------------
