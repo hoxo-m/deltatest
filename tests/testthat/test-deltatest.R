@@ -11,14 +11,14 @@ df_posneg <- data |>
   dplyr::group_by(user_id, group) |>
   dplyr::summarise(pos = sum(metric), neg = dplyr::n() - pos, .groups = "drop")
 
-expected_conf.int <- c(-0.12688957, 0.02009432)
+expected_conf.int <- c(-0.126889566, 0.020094323)
 attr(expected_conf.int, "conf.level") <- 0.95
 
 expected_result <- structure(list(
   statistic = c(z = -1.4240665), p.value = 0.15442723, conf.int = expected_conf.int,
-  estimate = c("mean in control" = 0.23902344, "mean in treatment" = 0.18562581, "difference" = -0.05339762),
+  estimate = c("mean in control" = 0.239023435, "mean in treatment" = 0.185625814, "difference" = -0.053397621),
   null.value = c("difference in means between control and treatment" = 0),
-  stderr = 0.03749658, alternative = "two.sided",
+  stderr = 0.037496579, alternative = "two.sided",
   method = "Two Sample Z-test Using the Delta Method",
   data.name = "click/pageview by group"
 ), class = c("deltatest", "htest"))
@@ -28,40 +28,40 @@ expected_result <- structure(list(
 test_that("standard formula works", {
   act <- deltatest(df, click / pageview ~ group, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result, tolerance = 1e-7)
+  expect_equal(act, expected_result)
 })
 
 test_that("standard formula variable works", {
   formula <- click / pageview ~ group
   act <- deltatest(df, formula, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result, tolerance = 1e-7)
+  expect_equal(act, expected_result)
 })
 
 test_that("lambda formula works", {
   act <- deltatest(df, ~ click / pageview, by = group, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result, tolerance = 1e-7)
+  expect_equal(act, expected_result)
 })
 
 test_that("lambda formula variable works", {
   formula <- ~ click / pageview
   act <- deltatest(df, formula, by = group, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result, tolerance = 1e-7)
+  expect_equal(act, expected_result)
 })
 
 test_that("NSE works", {
   act <- deltatest(df, click / pageview, by = group, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result, tolerance = 1e-7)
+  expect_equal(act, expected_result)
 })
 
 test_that("quote works", {
   metric <- quote(click / pageview)
   act <- deltatest(df, metric, by = group, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result, tolerance = 1e-7)
+  expect_equal(act, expected_result)
 })
 
 test_that("formula is missing", {
@@ -81,14 +81,14 @@ test_that("formula is incorrect; NSE", {
 
 test_that("formula is incorrect; absent cloumn name", {
   expect_error(deltatest(df, x / y ~ group),
-               "The 'formula' or 'by' argument is incorrect. Column 'x', 'y'")
+               "The 'formula' or 'by' argument is incorrect. .+ 'x', 'y'")
 })
 
 test_that("formula contains calculation", {
   expected_result$data.name <- "pos/(pos + neg) by group"
   act <- deltatest(df_posneg, pos / (pos + neg) ~ group, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result, tolerance = 1e-7)
+  expect_equal(act, expected_result)
 })
 
 
@@ -100,32 +100,32 @@ expected_result_bucket$data.name <- "click/pageview by bucket"
 test_that("'by' argument works; NSE", {
   act <- deltatest(df_bucket, click / pageview, by = bucket, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+  expect_equal(act, expected_result_bucket)
 })
 
 test_that("'by' argument works; character", {
   act <- deltatest(df_bucket, click / pageview, by = "bucket", quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+  expect_equal(act, expected_result_bucket)
 })
 
 test_that("'by' argument works; variable", {
   group_col <- "bucket"
   act <- deltatest(df_bucket, click / pageview, by = group_col, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+  expect_equal(act, expected_result_bucket)
 })
 
 test_that("'by' argument works; variable is ignored", {
   bucket <- "x"
   act <- deltatest(df_bucket, click / pageview, by = bucket, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+  expect_equal(act, expected_result_bucket)
 })
 
 test_that("'by' argument is incorrect", {
   expect_error(deltatest(df_bucket, click / pageview, by = x, quiet = TRUE),
-               "The 'formula' or 'by' argument is incorrect. Column 'x'")
+               "The 'formula' or 'by' argument is incorrect. .+ 'x'")
 })
 
 test_that("'by' argument is ambiguous", {
@@ -139,7 +139,7 @@ test_that("'by' argument is ambiguous; special case", {
   bucket <- "bucket"
   act <- deltatest(df_bucket, click / pageview, by = bucket, quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result_bucket, tolerance = 1e-7)
+  expect_equal(act, expected_result_bucket)
 })
 
 test_that("'by' argument is missing", {
@@ -147,3 +147,61 @@ test_that("'by' argument is missing", {
                "The 'by' argument is required.")
 })
 
+
+# group_names -------------------------------------------------------------
+test_that("'group_names' works", {
+  df <- df |> dplyr::mutate(group = dplyr::if_else(group == 0L, "control", "test"))
+  act <- deltatest(df, click / pageview ~ group, group_names = c("control", "test"), quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result)
+})
+
+test_that("'group_names' is 'auto'", {
+  expect_message({
+    deltatest(df, click / pageview ~ group, group_names = "auto", quiet = FALSE)
+  }, "control: 0, treatment: 1")
+})
+
+test_that("'group_names' is too long", {
+  expect_error({
+    deltatest(df, click / pageview ~ group, group_names = c("0", "1", "2"))
+  }, "The 'group_names' argument must be either 'auto' or a character vector of length 2.")
+})
+
+test_that("'group_names' is too short", {
+  expect_error({
+    deltatest(df, click / pageview ~ group, group_names = c("0"))
+  }, "The 'group_names' argument must be either 'auto' or a character vector of length 2.")
+})
+
+test_that("'group_names' is incorrect", {
+  expect_error({
+    deltatest(df, click / pageview ~ group, group_names = c("x", "y"))
+  }, "The 'group_names' argument is incorrect.")
+})
+
+
+# type --------------------------------------------------------------------
+expected_conf.int <- c(0.49823589, 1.06846113)
+attr(expected_conf.int, "conf.level") <- 0.95
+
+expected_result_for_relative_change <- structure(list(
+  statistic = c(z = -1.4893382), p.value = 0.136398335, conf.int = expected_conf.int,
+  estimate = c("mean in control" = 0.23902344, "mean in treatment" = 0.18562581, "relative change" = 0.78334851),
+  null.value = c("relative change in means between control and treatment" = 0),
+  stderr = 0.145468295, alternative = "two.sided",
+  method = "Two Sample Z-test Using the Delta Method",
+  data.name = "click/pageview by group"
+), class = c("deltatest", "htest"))
+
+test_that("'type' works", {
+  act <- deltatest(df, click / pageview ~ group, type = "difference", quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result)
+})
+
+test_that("'type' = 'relative_change'", {
+  act <- deltatest(df, click / pageview ~ group, type = "relative_change", quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result_for_relative_change)
+})

@@ -12,6 +12,9 @@ deltatest <- function(data, formula, by, group_names = "auto",
     stop("The 'formula' argument is required but missing. Use the format 'numerator/denominator ~ group', e.g., click/pageview ~ group.")
   }
   group_names <- as.character(group_names)
+  if (length(group_names) > 2L || (length(group_names) == 1L && group_names != "auto")) {
+    stop("The 'group_names' argument must be either 'auto' or a character vector of length 2.")
+  }
   type <- match.arg(type)
   bias_correction <- as.logical(bias_correction)
   alternative <- match.arg(alternative)
@@ -21,7 +24,7 @@ deltatest <- function(data, formula, by, group_names = "auto",
   # NSE (non-standard evaluation): formula = y / x
   metric_call <- rlang::enexpr(formula)
   if (!missing(by)) {
-    group_call <- rlang::ensym(by)
+    group_col_call <- rlang::ensym(by)
   }
 
   by_argument_required <- TRUE
@@ -30,7 +33,7 @@ deltatest <- function(data, formula, by, group_names = "auto",
     if (rlang::is_formula(formula, lhs = TRUE)) {
       # standard formula: y / x ~ group
       metric_call <- rlang::call_args(formula)[[1L]]
-      group_call <- rlang::call_args(formula)[[2L]]
+      group_col_call <- rlang::call_args(formula)[[2L]]
       by_argument_required  <- FALSE
     } else if (rlang::is_formula(formula, lhs = FALSE)) {
       # lambda formula: ~ y / x
@@ -46,12 +49,12 @@ deltatest <- function(data, formula, by, group_names = "auto",
     stop("The 'by' argument is required.")
   }
 
-  group_col <- rlang::as_string(group_call)
+  group_col <- rlang::as_string(group_col_call)
 
   if (by_argument_required) {
     # check 'by'
     if (group_col %in% ls(parent.frame())) {
-      group_col_in_parent <- eval(group_call, parent.frame())
+      group_col_in_parent <- eval(group_col_call, parent.frame())
       if (group_col_in_parent %in% ls(data) && group_col %in% ls(data)) {
         if (group_col_in_parent != group_col) {
           stop(glue("The 'by' argument is ambiguous. '{group_col}' could either be a column in 'data' or a variable. If it is a variable, it specifies the '{group_col_in_parent}' column."))
@@ -71,7 +74,12 @@ deltatest <- function(data, formula, by, group_names = "auto",
   absent_literals <- literals[!literals %in% ls(data)]
   if (length(absent_literals) > 0L) {
     absent_literals <- paste0("'", absent_literals, "'", collapse = ", ")
-    stop(glue("The 'formula' or 'by' argument is incorrect. Column {absent_literals} is not found in the data."))
+    stop(glue("The 'formula' or 'by' argument is incorrect. The data does not contain a column named {absent_literals}."))
+  }
+
+  # check 'group_names'
+  if (length(group_names) == 2L && !all(group_names %in% unique(data[[group_col]]))) {
+    stop(glue("The 'group_names' argument is incorrect. The '{group_col}' column in the data does not contain the elements '{group_names[1]}' or '{group_names[2]}'."))
   }
 
   # format 'data' -----------------------------------------------------------
