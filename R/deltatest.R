@@ -1,7 +1,7 @@
 #' @importFrom glue glue
 #'
 #' @export
-deltatest <- function(data, formula, by = "group", group_names = "auto",
+deltatest <- function(data, formula, by, group_names = "auto",
                       type = c("difference", "relative_change"),
                       bias_correction = TRUE,
                       alternative = c("two.sided", "less", "greater"),
@@ -20,7 +20,9 @@ deltatest <- function(data, formula, by = "group", group_names = "auto",
 
   # NSE (non-standard evaluation): formula = y / x
   metric_call <- rlang::enexpr(formula)
-  group_call <- rlang::ensym(by)
+  if (!missing(by)) {
+    group_call <- rlang::ensym(by)
+  }
 
   by_argument_required <- TRUE
   if (!rlang::is_call(metric_call, name = "/", n = 2L)) {
@@ -38,6 +40,10 @@ deltatest <- function(data, formula, by = "group", group_names = "auto",
       # formula = quote(y / x)
       metric_call <- formula
     }
+  }
+
+  if (missing(by) && by_argument_required) {
+    stop("The 'by' argument is required.")
   }
 
   group_col <- rlang::as_string(group_call)

@@ -141,3 +141,9 @@ test_that("'by' argument is ambiguous; special case", {
   act$info <- NULL
   expect_equal(act, expected_result_bucket, tolerance = 1e-7)
 })
+
+test_that("'by' argument is missing", {
+  expect_error(deltatest(df_bucket, click / pageview, quiet = TRUE),
+               "The 'by' argument is required.")
+})
+
