@@ -248,3 +248,64 @@ test_that("'alternative' = 'greater", {
   expect_equal(act, expected_result)
 })
 
+
+# conf.level --------------------------------------------------------------
+test_that("'conf.level' works", {
+  act <- deltatest(df, click / pageview ~ group, conf.level = 0.95, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result)
+
+  expected_result$conf.int <- structure(c(-0.1150740053, 0.0082787626), conf.level = 0.9)
+
+  act2 <- deltatest(df, click / pageview ~ group, conf.level = 0.9, quiet = TRUE)
+  act2$info <- NULL
+  expect_equal(act2, expected_result)
+
+  expect_lt(act$conf.int[1], act2$conf.int[1])
+  expect_gt(act$conf.int[2], act2$conf.int[2])
+})
+
+test_that("'conf.level' is character", {
+  act <- deltatest(df, click / pageview ~ group, conf.level = "0.95", quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result)
+})
+
+test_that("'conf.level' = 0", {
+  diff <- unname(expected_result$estimate["difference"])
+  expected_result$conf.int <- structure(c(diff, diff), conf.level = 0)
+
+  act <- deltatest(df, click / pageview ~ group, conf.level = 0, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result)
+})
+
+test_that("'conf.level' = 1", {
+  expected_result$conf.int <- structure(c(-Inf, Inf), conf.level = 1)
+
+  act <- deltatest(df, click / pageview ~ group, conf.level = 1, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result)
+})
+
+test_that("'conf.level' is invalid", {
+  testthat::expect_error({
+    deltatest(df, click / pageview ~ group, conf.level = -0.1, quiet = TRUE)
+  }, "The 'conf.level' argument must be a single number between 0 and 1")
+
+  testthat::expect_error({
+    deltatest(df, click / pageview ~ group, conf.level = 1.1, quiet = TRUE)
+  }, "The 'conf.level' argument must be a single number between 0 and 1")
+
+  testthat::expect_error({
+    deltatest(df, click / pageview ~ group, conf.level = -Inf, quiet = TRUE)
+  }, "The 'conf.level' argument must be a single number between 0 and 1")
+
+  testthat::expect_error({
+    deltatest(df, click / pageview ~ group, conf.level = Inf, quiet = TRUE)
+  }, "The 'conf.level' argument must be a single number between 0 and 1")
+
+  testthat::expect_error({
+    deltatest(df, click / pageview ~ group, conf.level = NA, quiet = TRUE)
+  }, "The 'conf.level' argument must be a single number between 0 and 1")
+})
