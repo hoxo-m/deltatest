@@ -182,18 +182,6 @@ test_that("'group_names' is incorrect", {
 
 
 # type --------------------------------------------------------------------
-expected_conf.int <- c(0.49823589, 1.06846113)
-attr(expected_conf.int, "conf.level") <- 0.95
-
-expected_result_for_relative_change <- structure(list(
-  statistic = c(z = -1.4893382), p.value = 0.136398335, conf.int = expected_conf.int,
-  estimate = c("mean in control" = 0.23902344, "mean in treatment" = 0.18562581, "relative change" = 0.78334851),
-  null.value = c("relative change in means between control and treatment" = 0),
-  stderr = 0.145468295, alternative = "two.sided",
-  method = "Two Sample Z-test Using the Delta Method",
-  data.name = "click/pageview by group"
-), class = c("deltatest", "htest"))
-
 test_that("'type' works", {
   act <- deltatest(df, click / pageview ~ group, type = "difference", quiet = TRUE)
   act$info <- NULL
@@ -201,7 +189,38 @@ test_that("'type' works", {
 })
 
 test_that("'type' = 'relative_change'", {
+  expected_conf.int <- c(0.49823589, 1.06846113)
+  attr(expected_conf.int, "conf.level") <- 0.95
+  expected_result$statistic <- c(z = -1.4893382)
+  expected_result$p.value <- 0.136398335
+  expected_result$conf.int <- expected_conf.int
+  expected_result$estimate <- c("mean in control" = 0.23902344, "mean in treatment" = 0.18562581, "relative change" = 0.78334851)
+  expected_result$null.value <- c("relative change in means between control and treatment" = 0)
+  expected_result$stderr <- 0.145468295
+
   act <- deltatest(df, click / pageview ~ group, type = "relative_change", quiet = TRUE)
   act$info <- NULL
-  expect_equal(act, expected_result_for_relative_change)
+  expect_equal(act, expected_result)
 })
+
+
+# bias_correction ---------------------------------------------------------
+test_that("'bias_correction' = TRUE", {
+  act <- deltatest(df, click / pageview ~ group, bias_correction = TRUE, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result)
+})
+
+test_that("'bias_correction' = FALSE", {
+  expected_conf.int <- c(-0.120046420, 0.026937469)
+  attr(expected_conf.int, "conf.level") <- 0.95
+  expected_result$statistic <- c("z" = -1.24156594)
+  expected_result$p.value <- 0.214396755
+  expected_result$conf.int <- expected_conf.int
+  expected_result$estimate <- c("mean in control" = 0.234960272, "mean in treatment" = 0.188405797, "difference" = -0.046554475)
+
+  act <- deltatest(df, click / pageview ~ group, bias_correction = FALSE, quiet = TRUE)
+  act$info <- NULL
+  expect_equal(act, expected_result)
+})
+
