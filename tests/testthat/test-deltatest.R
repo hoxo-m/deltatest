@@ -323,8 +323,19 @@ test_that("'na.rm' works", {
 })
 
 test_that("'na.rm' = FALSE with NA", {
-  testthat::expect_error({
+  expect_error({
     deltatest(df_na, click / pageview ~ group, na.rm = FALSE, quiet = TRUE)
   }, "NA value is found in the data at row number 1.")
 })
 
+
+# quiet -------------------------------------------------------------------
+test_that("'quiet' works", {
+  expect_message({
+    deltatest(df, click / pageview ~ group, group_names = "auto", quiet = FALSE)
+  }, "control: 0, treatment: 1")
+
+  expect_no_message({
+    deltatest(df, click / pageview ~ group, group_names = "auto", quiet = TRUE)
+  })
+})
