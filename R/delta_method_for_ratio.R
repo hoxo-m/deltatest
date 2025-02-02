@@ -1,4 +1,7 @@
 #' @import R6
+NULL
+
+#' The Delta Method for Ratio
 #'
 #' @export
 DeltaMethodForRatio <- R6::R6Class(

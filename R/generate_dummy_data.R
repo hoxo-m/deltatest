@@ -1,3 +1,5 @@
+#' Generate Dummy Data
+#'
 #' @importFrom stats rpois
 #'
 #' @export

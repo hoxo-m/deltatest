@@ -1,4 +1,7 @@
+#' Z-Test Using the Delta Method
+#'
 #' @importFrom glue glue
+#' @importFrom stats complete.cases
 #'
 #' @export
 deltatest <- function(data, formula, by, group_names = "auto",
