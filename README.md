@@ -117,3 +117,13 @@ ggplot(df, aes(p, prop)) +
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="600" />
+
+## References
+
+- Deng, A., Knoblich, U., & Lu, J. (2018). Applying the Delta Method in
+  Metric Analytics: A Practical Guide with Novel Ideas. *Proceedings of
+  the 24th ACM SIGKDD International Conference on Knowledge Discovery &
+  Data Mining.*
+- Deng, A., Lu, J., & Litz, J. (2017). Trustworthy Analysis of Online
+  A/B Tests: Pitfalls, challenges and solutions. *Proceedings of the
+  Tenth ACM International Conference on Web Search and Data Mining.*
