@@ -1,5 +1,39 @@
 #' Z-Test Using the Delta Method
 #'
+#' @param data data.frame containing numerator and denominator columns of the
+#'   ratio metric aggregated for each i.i.d. unit, along with a column indicating
+#'   the group it belongs to (control or treatment group). For example, if the
+#'   i.i.d. unit is 'user' and the metric is CTR, the numerator is the number of
+#'   clicks per user, and the denominator is the number of page views per user.
+#' @param formula expression representing the ratio metric. It can be written in
+#'   three styles: standard formula `x/y ~ group`, lambda formula `~ x/y`, or
+#'   NSE expression `x/y`.
+#' @param by character string or symbol that indicates the group column.
+#' @param group_names character vector of length 2 or `'auto'`. It specifies
+#'   which of the two strings contained in the group column is the control group
+#'   and which is the treatment group. The first string is considered the control
+#'   group, and the second string is considered the treatment group. If `'auto'`
+#'   is specified, it is interpreted as specifying the strings in the group
+#'   column sorted in lexicographical order. The default is `'auto'`.
+#' @param type character string. When `'difference'` is specified, the hypothesis
+#'   test evaluates the difference in the means of the ratio metric. When
+#'   `'relative_change'` is specified, the hypothesis test evaluates the percent
+#'   of change in the ratio metric. The default is `'difference'`.
+#' @param bias_correction logical value indicating whether correction to the
+#'   mean of the metric is performed using the second-order term of the Taylor
+#'   expansion. The default is `TRUE`.
+#' @param alternative character string specifying the alternative hypothesis,
+#'   must be one of `"two.sided"` (default), `"greater"`, or `"less"`. You can
+#'   specify just the initial letter.
+#' @param conf.level numeric value specifying the confidence level of the
+#'   interval. The default is 0.95.
+#' @param na.rm logical value. If `TRUE`, rows containing NA values in the data
+#'   will be excluded from the analysis. The default is `FALSE`.
+#' @param quiet logical value indicating whether messages should be displayed
+#'   during the execution of the function. The default is `FALSE`.
+#'
+#' @return `htest` object.
+#'
 #' @importFrom glue glue
 #' @importFrom stats complete.cases
 #'
