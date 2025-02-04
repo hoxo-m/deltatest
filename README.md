@@ -51,7 +51,7 @@ deltatest(df, click / pageview, by = group)
 #>  Two Sample Z-test Using the Delta Method
 #> 
 #> data:  click/pageview by group
-#> z = 0.89707, p-value = 0.3697
+#> Z = 0.89707, p-value = 0.3697
 #> alternative hypothesis: true difference in means between control and treatment is not equal to 0
 #> 95 percent confidence interval:
 #>  -0.009110998  0.024490289
@@ -127,3 +127,7 @@ ggplot(df, aes(p, prop)) +
 - Deng, A., Lu, J., & Litz, J. (2017). Trustworthy Analysis of Online
   A/B Tests: Pitfalls, challenges and solutions. *Proceedings of the
   Tenth ACM International Conference on Web Search and Data Mining.*
+- id:sz_dr (2018). Calculating the mean and variance of the ratio of
+  random variables using the Delta method \[in Japanese\]. *If you are
+  human, think more now.*
+  <https://www.szdrblog.info/entry/2018/11/18/154952>
