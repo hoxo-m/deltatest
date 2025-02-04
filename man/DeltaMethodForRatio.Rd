@@ -4,9 +4,12 @@
 \alias{DeltaMethodForRatio}
 \title{The Delta Method for Ratio}
 \description{
-The Delta Method for Ratio
-
-The Delta Method for Ratio
+Applies the Delta method to the ratio of two random variables,
+\eqn{f(X,Y)=X/Y}, to estimate the expected value, variance, standard error,
+and confidence intervals.
+}
+\seealso{
+\link{DeltaMethodForRatioClassMethods}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -25,67 +28,134 @@ The Delta Method for Ratio
 \if{html}{\out{<a id="method-DeltaMethodForRatio-new"></a>}}
 \if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize a new DeltaMethodForRatio object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$new(numerator, denominator, bias_correction = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{numerator, denominator}}{numeric vectors sampled from the
+distributions of the random variables in the numerator and denominator
+of the ratio.}
+
+\item{\code{bias_correction}}{logical value indicating whether correction to the
+mean of the metric is performed using the second-order term of the Taylor
+expansion. The default is \code{TRUE}.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DeltaMethodForRatio-get_expected_value"></a>}}
 \if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-get_expected_value}{}}}
 \subsection{Method \code{get_expected_value()}}{
+Get expected value.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$get_expected_value()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+numeric estimate of the expected value of the ratio.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DeltaMethodForRatio-get_variance"></a>}}
 \if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-get_variance}{}}}
 \subsection{Method \code{get_variance()}}{
+Get variance.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$get_variance()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+numeric estimate of the variance of the ratio.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DeltaMethodForRatio-get_squared_standard_error"></a>}}
 \if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-get_squared_standard_error}{}}}
 \subsection{Method \code{get_squared_standard_error()}}{
+Get squared standard error.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$get_squared_standard_error()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+numeric estimate of the squared standard error of the ratio.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DeltaMethodForRatio-get_standard_error"></a>}}
 \if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-get_standard_error}{}}}
 \subsection{Method \code{get_standard_error()}}{
+Get standard error.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$get_standard_error()}\if{html}{\out{</div>}}
 }
 
+\subsection{Returns}{
+numeric estimate of the standard error of the ratio.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DeltaMethodForRatio-get_confidence_interval"></a>}}
 \if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-get_confidence_interval}{}}}
 \subsection{Method \code{get_confidence_interval()}}{
+Get confidence intervals.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$get_confidence_interval(
-  alternative = "two.sided",
+  alternative = c("two.sided", "less", "greater"),
   conf_level = 0.95
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{alternative}}{character string specifying the alternative
+hypothesis, must be one of \code{"two.sided"} (default), \code{"greater"}, or
+\code{"less"}. You can specify just the initial letter.}
+
+\item{\code{conf_level}}{numeric value specifying the confidence level of the
+interval. The default is 0.95.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+numeric estimates of the lower and upper bounds of the confidence
+interval of the ratio.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DeltaMethodForRatio-get_info"></a>}}
 \if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-get_info}{}}}
 \subsection{Method \code{get_info()}}{
+Get statistical information.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$get_info(alternative = "two.sided", conf_level = 0.95)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$get_info(
+  alternative = c("two.sided", "less", "greater"),
+  conf_level = 0.95
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{alternative}}{character string specifying the alternative
+hypothesis, must be one of \code{"two.sided"} (default), \code{"greater"}, or
+\code{"less"}. You can specify just the initial letter.}
+
+\item{\code{conf_level}}{numeric value specifying the confidence level of the
+interval. The default is 0.95.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+numeric estimates include the expected value, variance, standard
+error, and confidence intervals.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-DeltaMethodForRatio-clone"></a>}}

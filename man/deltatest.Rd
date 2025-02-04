@@ -83,3 +83,11 @@ using the delta method. The Delta method is used to estimate the variance by
 accounting for the correlation between the numerator and denominator of ratio
 metrics.
 }
+\references{
+\itemize{
+\item Deng, A., Knoblich, U., & Lu, J. (2018). Applying the Delta
+Method in Metric Analytics: A Practical Guide with Novel Ideas.
+\emph{Proceedings of the 24th ACM SIGKDD International Conference on Knowledge
+Discovery & Data Mining.} \doi{10.1145/3219819.3219919}
+}
+}

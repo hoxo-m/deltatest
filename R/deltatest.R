@@ -54,6 +54,12 @@
 #'   \item{method}{a character string describing the method used.}
 #'   \item{data.name}{the name of the data.}
 #'
+#' @references
+#' - Deng, A., Knoblich, U., & Lu, J. (2018). Applying the Delta
+#'   Method in Metric Analytics: A Practical Guide with Novel Ideas.
+#'   *Proceedings of the 24th ACM SIGKDD International Conference on Knowledge
+#'   Discovery & Data Mining.* \doi{10.1145/3219819.3219919}
+#'
 #' @importFrom glue glue
 #' @importFrom stats complete.cases
 #'
