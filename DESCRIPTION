@@ -4,7 +4,8 @@ Title: Statistical Hypothesis Test Using the Delta Method
 Version: 0.0.0.9002
 Authors@R:
     person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre"))
-Description: Statistical hypothesis test using the Delta method for online A/B tests.
+Description: Statistical hypothesis test using the Delta method for online
+    A/B tests.
 License: file LICENSE
 Depends: 
     R (>= 4.1.0)
@@ -20,3 +21,4 @@ Suggests:
 Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)

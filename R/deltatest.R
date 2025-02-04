@@ -1,24 +1,32 @@
-#' Z-Test Using the Delta Method
+#' Two Sample Z-Test for Ratio Metrics Using the Delta Method
 #'
-#' @param data data.frame containing numerator and denominator columns of the
-#'   ratio metric aggregated for each i.i.d. unit, along with a column indicating
-#'   the group it belongs to (control or treatment group). For example, if the
-#'   i.i.d. unit is 'user' and the metric is CTR, the numerator is the number of
-#'   clicks per user, and the denominator is the number of page views per user.
+#' Performs two sample Z-test to compare the ratio metrics between two groups
+#' using the delta method. The Delta method is used to estimate the variance by
+#' accounting for the correlation between the numerator and denominator of ratio
+#' metrics.
+#'
+#' @param data data.frame containing the numerator and denominator columns of
+#'   the ratio metric, aggregated by randomization unit. It also includes a
+#'   column indicating the assigned group (control or treatment). For example,
+#'   if randomizing by user while the metric is click-through rate (CTR) per
+#'   page-view, the numerator is the number of clicks per user, and the
+#'   denominator is the number of page views per user.
 #' @param formula expression representing the ratio metric. It can be written in
 #'   three styles: standard formula `x/y ~ group`, lambda formula `~ x/y`, or
 #'   NSE expression `x/y`.
-#' @param by character string or symbol that indicates the group column.
-#' @param group_names character vector of length 2 or `'auto'`. It specifies
+#' @param by character string or symbol that indicates the group column. If the
+#'   group column is specified in the `formula` argument, it is not required.
+#' @param group_names character vector of length 2 or `"auto"`. It specifies
 #'   which of the two strings contained in the group column is the control group
 #'   and which is the treatment group. The first string is considered the control
-#'   group, and the second string is considered the treatment group. If `'auto'`
+#'   group, and the second string is considered the treatment group. If `"auto"`
 #'   is specified, it is interpreted as specifying the strings in the group
-#'   column sorted in lexicographical order. The default is `'auto'`.
-#' @param type character string. When `'difference'` is specified, the hypothesis
-#'   test evaluates the difference in the means of the ratio metric. When
-#'   `'relative_change'` is specified, the hypothesis test evaluates the percent
-#'   of change in the ratio metric. The default is `'difference'`.
+#'   column sorted in lexicographical order. The default is `"auto"`.
+#' @param type character string specifying the test type. If `"difference"`
+#'   (default), the hypothesis test evaluates the difference in means of the
+#'   ratio metric between two groups. If `"relative_change"`, it evaluates the
+#'   relative change \eqn{(\mu_2 - \mu_1) / \mu_1} instead. You can specify just
+#'   the initial letter.
 #' @param bias_correction logical value indicating whether correction to the
 #'   mean of the metric is performed using the second-order term of the Taylor
 #'   expansion. The default is `TRUE`.
@@ -32,7 +40,19 @@
 #' @param quiet logical value indicating whether messages should be displayed
 #'   during the execution of the function. The default is `FALSE`.
 #'
-#' @return `htest` object.
+#' @return A list with class `"htest"` containing following components:
+#'   \item{statistic}{the value of the Z-statistic.}
+#'   \item{p.value}{the p-value for the test.}
+#'   \item{conf.int}{a confidence interval for the difference or relative change
+#'                   appropriate to the specified alternative hypothesis.}
+#'   \item{estimate}{the estimated means of the two groups, and the difference
+#'                   or relative change.}
+#'   \item{null.value}{the hypothesized value of the difference or relative
+#'                     change in means under the null hypothesis.}
+#'   \item{stderr}{the standard error of the difference or relative change.}
+#'   \item{alternative}{a character string describing the alternative hypothesis.}
+#'   \item{method}{a character string describing the method used.}
+#'   \item{data.name}{the name of the data.}
 #'
 #' @importFrom glue glue
 #' @importFrom stats complete.cases
@@ -208,7 +228,7 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
 
     diff <- mean_t - mean_c
 
-    z_score <- c("z" = diff / standard_error)
+    z_score <- c("Z" = diff / standard_error)
 
     confidence_interval <- DeltaMethodForRatio$compute_confidence_interval(
       diff, standard_error, alternative, conf.level)
@@ -224,7 +244,7 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
     relative_change <- DeltaMethodForRatio$compute_expected_value(
       mean_t, mean_c, squared_SE_c, cov = 0, bias_correction = bias_correction)
 
-    z_score <- c("z" = (relative_change - 1) / standard_error)
+    z_score <- c("Z" = (relative_change - 1) / standard_error)
 
     confidence_interval <- DeltaMethodForRatio$compute_confidence_interval(
       relative_change, standard_error, alternative, conf.level)
