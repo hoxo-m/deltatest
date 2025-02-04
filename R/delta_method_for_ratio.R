@@ -3,7 +3,7 @@
 #' @description
 #' Applies the Delta method to the ratio of two random variables,
 #' \eqn{f(X,Y)=X/Y}, to estimate the expected value, variance, standard error,
-#' and confidence intervals.
+#' and confidence interval.
 #'
 #' @seealso [DeltaMethodForRatioClassMethods]
 #'
@@ -135,6 +135,9 @@ DeltaMethodForRatio <- R6::R6Class(
   )
 )
 
+# class methods -----------------------------------------------------------
+# NOTE: Class method documentation is directly edited in the
+#       DeltaMethodForRatioClassMethods.Rd file.
 DeltaMethodForRatio$compute_expected_value <- function(
     mean1, mean2, var2, cov = 0, bias_correction = TRUE) {
 

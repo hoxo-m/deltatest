@@ -34,17 +34,20 @@ DeltaMethodForRatio$compute_confidence_interval(estimate, standard_error, altern
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-\item{DeltaMethodForRatio$compute_expected_value}{numeric estimate of the
-      expected value of the ratio}
-\item{DeltaMethodForRatio$compute_variance}{numeric estimate of the variance of
-      the ratio}
-\item{DeltaMethodForRatio$compute_confidence_interval}{numeric estimates of the
-      lower and upper bounds of the confidence interval of the ratio.}
+  \item{DeltaMethodForRatio$compute_expected_value}{numeric estimate of the
+        expected value of the ratio}
+  \item{DeltaMethodForRatio$compute_variance}{numeric estimate of the variance
+        of the ratio}
+  \item{DeltaMethodForRatio$compute_confidence_interval}{numeric estimates of
+        the lower and upper bounds of the confidence interval of the ratio.}
 }
 \references{
-id:sz_dr (2018). Calculating the mean and variance of the ratio of random
-variables using the Delta method [in Japanese]. \emph{If you are human, think
-more now.} \url{https://www.szdrblog.info/entry/2018/11/18/154952}
+  \itemize{
+    \item id:sz_dr (2018). Calculating the mean and variance of the ratio of
+      random variables using the Delta method [in Japanese]. \emph{If you are
+      human, think more now.}
+      \url{https://www.szdrblog.info/entry/2018/11/18/154952}
+  }
 }
 \note{
 %%  ~~further notes~~
@@ -53,17 +56,30 @@ more now.} \url{https://www.szdrblog.info/entry/2018/11/18/154952}
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{DeltaMethodForRatio}}
+  \code{\link{DeltaMethodForRatio}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or standard data sets, see data().
+library(deltatest)
+library(dplyr)
 
-## The function is currently defined as
-function (x)
-{
-  }
+n_user <- 100
+
+set.seed(314)
+df <- generate_dummy_data(n_user) |>
+  filter(group == 0) |>
+  group_by(user_id, group) |>
+  summarise(click = sum(metric), pageview = n(), .groups = "drop")
+
+mean1 <- mean(df$click)
+mean2 <- mean(df$pageview)
+var1 <- var(df$click)
+var2 <- var(df$pageview)
+cov <- cov(df$click, df$pageview)
+
+mean <- DeltaMethodForRatio$compute_expected_value(mean1, mean2, var2, cov)
+var <- DeltaMethodForRatio$compute_variance(mean1, mean2, var1, var2, cov)
+se <- sqrt(var / nrow(df))
+DeltaMethodForRatio$compute_confidence_interval(mean, se)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):
