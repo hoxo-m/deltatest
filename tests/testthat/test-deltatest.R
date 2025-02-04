@@ -12,7 +12,7 @@ df_posneg <- data |>
   dplyr::summarise(pos = sum(metric), neg = dplyr::n() - pos, .groups = "drop")
 
 expected_result <- structure(list(
-  statistic = c(z = -1.4240665), p.value = 0.15442723,
+  statistic = c(Z = -1.4240665), p.value = 0.15442723,
   conf.int = structure(c(-0.126889566, 0.020094323), conf.level = 0.95),
   estimate = c("mean in control" = 0.239023435, "mean in treatment" = 0.185625814, "difference" = -0.053397621),
   null.value = c("difference in means between control and treatment" = 0),
@@ -187,7 +187,7 @@ test_that("'type' works", {
 })
 
 test_that("'type' = 'relative_change'", {
-  expected_result$statistic <- c(z = -1.4893382)
+  expected_result$statistic <- c(Z = -1.4893382)
   expected_result$p.value <- 0.136398335
   expected_result$conf.int <- structure(c(0.49823589, 1.06846113), conf.level = 0.95)
   expected_result$estimate <- c("mean in control" = 0.23902344, "mean in treatment" = 0.18562581, "relative change" = 0.78334851)
@@ -208,7 +208,7 @@ test_that("'bias_correction' = TRUE", {
 })
 
 test_that("'bias_correction' = FALSE", {
-  expected_result$statistic <- c(z = -1.24156594)
+  expected_result$statistic <- c(Z = -1.24156594)
   expected_result$p.value <- 0.214396755
   expected_result$conf.int <- structure(c(-0.120046420, 0.026937469), conf.level = 0.95)
   expected_result$estimate <- c("mean in control" = 0.234960272, "mean in treatment" = 0.188405797, "difference" = -0.046554475)
@@ -227,7 +227,7 @@ test_that("'alternative' = 'two.sided", {
 })
 
 test_that("'alternative' = 'less", {
-  expected_result$statistic <- c(z = -1.4240665)
+  expected_result$statistic <- c(Z = -1.4240665)
   expected_result$p.value <- 0.15442723
   expected_result$conf.int <- structure(c(-Inf, 0.0082787626), conf.level = 0.95)
   expected_result$alternative <- "less"
@@ -238,7 +238,7 @@ test_that("'alternative' = 'less", {
 })
 
 test_that("'alternative' = 'greater", {
-  expected_result$statistic <- c(z = -1.4240665)
+  expected_result$statistic <- c(Z = -1.4240665)
   expected_result$p.value <- 0.15442723
   expected_result$conf.int <- structure(c(-0.115074005, Inf), conf.level = 0.95)
   expected_result$alternative <- "greater"
