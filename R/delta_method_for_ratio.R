@@ -5,9 +5,13 @@
 #' \eqn{f(X,Y)=X/Y}, to estimate the expected value, variance, standard error,
 #' and confidence interval.
 #'
-#' @seealso [DeltaMethodForRatioClassMethods]
+#' @references
+#' - id:sz_dr (2018). Calculating the mean and variance of the ratio of random
+#'   variables using the Delta method \[in Japanese\]. *If you are human, think
+#'   more now.* \url{https://www.szdrblog.info/entry/2018/11/18/154952}
 #'
 #' @import R6
+#'
 #' @export
 DeltaMethodForRatio <- R6::R6Class(
   "DeltaMethodForRatio",
@@ -30,8 +34,8 @@ DeltaMethodForRatio <- R6::R6Class(
     #'   distributions of the random variables in the numerator and denominator
     #'   of the ratio.
     #' @param bias_correction logical value indicating whether correction to the
-    #'   mean of the metric is performed using the second-order term of the Taylor
-    #'   expansion. The default is `TRUE`.
+    #'   mean of the metric is performed using the second-order term of the
+    #'   Taylor expansion. The default is `TRUE`.
     initialize = function(numerator, denominator, bias_correction = TRUE) {
       size1 = length(numerator)
       size2 = length(denominator)
@@ -47,9 +51,9 @@ DeltaMethodForRatio <- R6::R6Class(
       var2 <- var(denominator)
       cov <- cov(numerator, denominator)
 
-      private$expected_value <- DeltaMethodForRatio$compute_expected_value(
+      private$expected_value <- self$compute_expected_value(
         mean1, mean2, var2, cov, bias_correction)
-      private$variance <- DeltaMethodForRatio$compute_variance(
+      private$variance <- self$compute_variance(
         mean1, mean2, var1, var2, cov)
       private$squared_standard_error <- private$variance / private$size
       private$standard_error <- sqrt(private$squared_standard_error)
@@ -96,12 +100,11 @@ DeltaMethodForRatio <- R6::R6Class(
     #'   interval of the ratio.
     get_confidence_interval = function(alternative = c("two.sided", "less", "greater"),
                                        conf_level = 0.95) {
-
       alternative <- match.arg(alternative)
 
       expected_value <- self$get_expected_value()
       standard_error <- self$get_standard_error()
-      DeltaMethodForRatio$compute_confidence_interval(
+      self$compute_confidence_interval(
         expected_value, standard_error, alternative, conf_level)
     },
 
@@ -115,10 +118,9 @@ DeltaMethodForRatio <- R6::R6Class(
     #'   interval. The default is 0.95.
     #'
     #' @return numeric estimates include the expected value, variance, standard
-    #'   error, and confidence intervals.
+    #'   error, and confidence interval.
     get_info = function(alternative = c("two.sided", "less", "greater"),
                         conf_level = 0.95) {
-
       alternative <- match.arg(alternative)
 
       size <- private$size
@@ -131,49 +133,84 @@ DeltaMethodForRatio <- R6::R6Class(
       lower <- ci[1]
       upper <- ci[2]
       data.frame(size, x, n, mean, var, se, lower, upper)
+    },
+
+    # class methods -----------------------------------------------------------
+
+    #' @description
+    #' Class Method to Compute the Expected Value of the Ratio Using the Delta
+    #' Method
+    #'
+    #' @param mean1 description
+    #' @param mean2 description
+    #' @param var2 description
+    #' @param cov description
+    #' @param bias_correction logical value indicating whether correction to the
+    #'   mean of the metric is performed using the second-order term of the
+    #'   Taylor expansion. The default is `TRUE`.
+    #'
+    #' @return numeric estimate of the expected value of the ratio
+    compute_expected_value = function(mean1, mean2, var2, cov = 0,
+                                      bias_correction = TRUE) {
+      expected_value <- mean1 / mean2
+      if (bias_correction) {
+        bias <- var2 * mean1 / (mean2^3) - cov / (mean2^2)
+        expected_value <- expected_value + bias
+      }
+      expected_value
+    },
+
+    #' @description
+    #' Class Method to Compute the Variance of the Ratio Using the Delta Method
+    #'
+    #' @param mean1 description
+    #' @param mean2 description
+    #' @param var1 description
+    #' @param var2 description
+    #' @param cov description
+    #'
+    #' @return numeric estimate of the variance of the ratio
+    compute_variance = function(mean1, mean2, var1, var2, cov = 0) {
+      var1 / (mean2^2) + var2 * (mean1^2) / (mean2^4) - 2 * cov * mean1 / (mean2^3)
+    },
+
+    #' @description
+    #' Class Method to Compute the Confidence Interval of the Ratio Using the
+    #' Delta Method
+    #'
+    #' @param estimate description
+    #' @param standard_error description
+    #' @param alternative character string specifying the alternative
+    #'   hypothesis, must be one of `"two.sided"` (default), `"greater"`, or
+    #'   `"less"`. You can specify just the initial letter.
+    #' @param conf_level numeric value specifying the confidence level of the
+    #'   interval. The default is 0.95.
+    #'
+    #' @return numeric estimates of the lower and upper bounds of the confidence
+    #'   interval of the ratio.
+    #'
+    #' @importFrom stats qnorm
+    compute_confidence_interval = function(estimate, standard_error,
+                                           alternative = c("two.sided", "less", "greater"),
+                                           conf_level = 0.95) {
+      alternative <- match.arg(alternative)
+
+      if (alternative == "two.sided") {
+        p <- 1 - (1 - conf_level) / 2
+        lower <- estimate - qnorm(p) * standard_error
+        upper <- estimate + qnorm(p) * standard_error
+      } else if (alternative == "less") {
+        p <- conf_level
+        lower <- -Inf
+        upper <- estimate + qnorm(p) * standard_error
+      } else {
+        p <- conf_level
+        lower <- estimate - qnorm(p) * standard_error
+        upper <- Inf
+      }
+      confidence_interval <- c(lower, upper)
+      attr(confidence_interval, "conf.level") <- conf_level
+      confidence_interval
     }
   )
 )
-
-# class methods -----------------------------------------------------------
-# NOTE: Class method documentation is directly edited in the
-#       DeltaMethodForRatioClassMethods.Rd file.
-DeltaMethodForRatio$compute_expected_value <- function(
-    mean1, mean2, var2, cov = 0, bias_correction = TRUE) {
-
-  expected_value <- mean1 / mean2
-  if (bias_correction) {
-    bias <- var2 * mean1 / (mean2^3) - cov / (mean2^2)
-    expected_value <- expected_value + bias
-  }
-  expected_value
-}
-
-DeltaMethodForRatio$compute_variance <- function(mean1, mean2, var1, var2, cov = 0) {
-  var1 / (mean2^2) + var2 * (mean1^2) / (mean2^4) - 2 * cov * mean1 / (mean2^3)
-}
-
-#' @importFrom stats qnorm
-DeltaMethodForRatio$compute_confidence_interval <-  function(
-    estimate, standard_error, alternative = c("two.sided", "less", "greater"),
-    conf_level = 0.95) {
-
-  alternative <- match.arg(alternative)
-
-  if (alternative == "two.sided") {
-    p <- 1 - (1 - conf_level) / 2
-    lower <- estimate - qnorm(p) * standard_error
-    upper <- estimate + qnorm(p) * standard_error
-  } else if (alternative == "less") {
-    p <- conf_level
-    lower <- -Inf
-    upper <- estimate + qnorm(p) * standard_error
-  } else {
-    p <- conf_level
-    lower <- estimate - qnorm(p) * standard_error
-    upper <- Inf
-  }
-  confidence_interval <- c(lower, upper)
-  attr(confidence_interval, "conf.level") <- conf_level
-  confidence_interval
-}

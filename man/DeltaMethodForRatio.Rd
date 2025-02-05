@@ -6,10 +6,14 @@
 \description{
 Applies the Delta method to the ratio of two random variables,
 \eqn{f(X,Y)=X/Y}, to estimate the expected value, variance, standard error,
-and confidence intervals.
+and confidence interval.
 }
-\seealso{
-\link{DeltaMethodForRatioClassMethods}
+\references{
+\itemize{
+\item id:sz_dr (2018). Calculating the mean and variance of the ratio of random
+variables using the Delta method [in Japanese]. \emph{If you are human, think
+more now.} \url{https://www.szdrblog.info/entry/2018/11/18/154952}
+}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -21,6 +25,9 @@ and confidence intervals.
 \item \href{#method-DeltaMethodForRatio-get_standard_error}{\code{DeltaMethodForRatio$get_standard_error()}}
 \item \href{#method-DeltaMethodForRatio-get_confidence_interval}{\code{DeltaMethodForRatio$get_confidence_interval()}}
 \item \href{#method-DeltaMethodForRatio-get_info}{\code{DeltaMethodForRatio$get_info()}}
+\item \href{#method-DeltaMethodForRatio-compute_expected_value}{\code{DeltaMethodForRatio$compute_expected_value()}}
+\item \href{#method-DeltaMethodForRatio-compute_variance}{\code{DeltaMethodForRatio$compute_variance()}}
+\item \href{#method-DeltaMethodForRatio-compute_confidence_interval}{\code{DeltaMethodForRatio$compute_confidence_interval()}}
 \item \href{#method-DeltaMethodForRatio-clone}{\code{DeltaMethodForRatio$clone()}}
 }
 }
@@ -41,8 +48,8 @@ distributions of the random variables in the numerator and denominator
 of the ratio.}
 
 \item{\code{bias_correction}}{logical value indicating whether correction to the
-mean of the metric is performed using the second-order term of the Taylor
-expansion. The default is \code{TRUE}.}
+mean of the metric is performed using the second-order term of the
+Taylor expansion. The default is \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -154,7 +161,108 @@ interval. The default is 0.95.}
 }
 \subsection{Returns}{
 numeric estimates include the expected value, variance, standard
-error, and confidence intervals.
+error, and confidence interval.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DeltaMethodForRatio-compute_expected_value"></a>}}
+\if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-compute_expected_value}{}}}
+\subsection{Method \code{compute_expected_value()}}{
+Class Method to Compute the Expected Value of the Ratio Using the Delta
+Method
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$compute_expected_value(
+  mean1,
+  mean2,
+  var2,
+  cov = 0,
+  bias_correction = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mean1}}{description}
+
+\item{\code{mean2}}{description}
+
+\item{\code{var2}}{description}
+
+\item{\code{cov}}{description}
+
+\item{\code{bias_correction}}{logical value indicating whether correction to the
+mean of the metric is performed using the second-order term of the
+Taylor expansion. The default is \code{TRUE}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+numeric estimate of the expected value of the ratio
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DeltaMethodForRatio-compute_variance"></a>}}
+\if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-compute_variance}{}}}
+\subsection{Method \code{compute_variance()}}{
+Class Method to Compute the Variance of the Ratio Using the Delta Method
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$compute_variance(mean1, mean2, var1, var2, cov = 0)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mean1}}{description}
+
+\item{\code{mean2}}{description}
+
+\item{\code{var1}}{description}
+
+\item{\code{var2}}{description}
+
+\item{\code{cov}}{description}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+numeric estimate of the variance of the ratio
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DeltaMethodForRatio-compute_confidence_interval"></a>}}
+\if{latex}{\out{\hypertarget{method-DeltaMethodForRatio-compute_confidence_interval}{}}}
+\subsection{Method \code{compute_confidence_interval()}}{
+Class Method to Compute the Confidence Interval of the Ratio Using the
+Delta Method
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$compute_confidence_interval(
+  estimate,
+  standard_error,
+  alternative = c("two.sided", "less", "greater"),
+  conf_level = 0.95
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{estimate}}{description}
+
+\item{\code{standard_error}}{description}
+
+\item{\code{alternative}}{character string specifying the alternative
+hypothesis, must be one of \code{"two.sided"} (default), \code{"greater"}, or
+\code{"less"}. You can specify just the initial letter.}
+
+\item{\code{conf_level}}{numeric value specifying the confidence level of the
+interval. The default is 0.95.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+numeric estimates of the lower and upper bounds of the confidence
+interval of the ratio.
 }
 }
 \if{html}{\out{<hr>}}

@@ -228,6 +228,7 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
   squared_SE_c <- delta_method_c$get_squared_standard_error()
   squared_SE_t <- delta_method_t$get_squared_standard_error()
 
+  delta_method <- DeltaMethodForRatio$public_methods
   if (type == "difference") {
     squared_SE_of_diff <- squared_SE_c + squared_SE_t
     standard_error <- sqrt(squared_SE_of_diff)
@@ -236,23 +237,23 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
 
     z_score <- c("Z" = diff / standard_error)
 
-    confidence_interval <- DeltaMethodForRatio$compute_confidence_interval(
+    confidence_interval <- delta_method$compute_confidence_interval(
       diff, standard_error, alternative, conf.level)
 
     estimate <- c("mean in control" = mean_c, "mean in treatment" = mean_t,
                   "difference" = diff)
     null_value <- c("difference in means between control and treatment" = 0)
   } else {  # relative change
-    squared_SE_of_relative_change <- DeltaMethodForRatio$compute_variance(
+    squared_SE_of_relative_change <- delta_method$compute_variance(
       mean_t, mean_c, squared_SE_t, squared_SE_c)
     standard_error <- sqrt(squared_SE_of_relative_change)
 
-    relative_change <- DeltaMethodForRatio$compute_expected_value(
+    relative_change <- delta_method$compute_expected_value(
       mean_t, mean_c, squared_SE_c, cov = 0, bias_correction = bias_correction)
 
     z_score <- c("Z" = (relative_change - 1) / standard_error)
 
-    confidence_interval <- DeltaMethodForRatio$compute_confidence_interval(
+    confidence_interval <- delta_method$compute_confidence_interval(
       relative_change, standard_error, alternative, conf.level)
 
     estimate <- c("mean in control" = mean_c, "mean in treatment" = mean_t,
