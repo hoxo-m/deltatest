@@ -7,12 +7,41 @@
 generate_dummy_data(
   n_user,
   model = c("Bernoulli", "normal"),
-  sigma = 0,
   xi = 0,
-  random_unit = c("user", "session", "page"),
+  sigma = 0,
+  random_unit = c("user", "session", "pageview"),
   treatment_ratio = 0.5
 )
 }
+\arguments{
+\item{n_user}{integer value of the number of users.}
+
+\item{model}{character string specifying the model that generates the
+potential outcomes. It must be one of \code{"Bernoulli"} (default) or
+\code{"normal"}. You can specify just the initial letter.}
+
+\item{xi}{numeric value specifying the treatment effect variation (TEV) under
+the Bernoulli model, where \eqn{TEV = 2\xi}. This argument is ignored if
+the \code{model} argument is set to \code{"normal"}.}
+
+\item{sigma}{numeric value specifying the treatment effect variation (TEV)
+under the normal model, where \eqn{TEV = \sigma}. This argument is ignored
+if the \code{model} argument is set to \code{"Bernoulli"}.}
+
+\item{random_unit}{character string specifying the randomization unit. It
+must be one of \code{"user"} (default), \code{"session"}, or \code{"pageview"}. You can
+specify just the initial letter.}
+
+\item{treatment_ratio}{numeric value specifying the ratio assigned to
+treatment. The default value is 0.5.}
+}
 \description{
 Generate Dummy Data
+}
+\references{
+\itemize{
+\item Deng, A., Lu, J., & Litz, J. (2017). Trustworthy Analysis of Online A/B
+Tests: Pitfalls, challenges and solutions. \emph{Proceedings of the Tenth ACM
+International Conference on Web Search and Data Mining.}
+}
 }
