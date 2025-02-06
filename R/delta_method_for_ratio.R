@@ -60,35 +60,35 @@ DeltaMethodForRatio <- R6::R6Class(
     },
 
     #' @description
-    #' Get expected value.
+    #' Get the expected value.
     #' @return numeric estimate of the expected value of the ratio.
     get_expected_value = function() {
       private$expected_value
     },
 
     #' @description
-    #' Get variance.
+    #' Get the variance.
     #' @return numeric estimate of the variance of the ratio.
     get_variance = function() {
       private$variance
     },
 
     #' @description
-    #' Get squared standard error.
+    #' Get the squared standard error.
     #' @return numeric estimate of the squared standard error of the ratio.
     get_squared_standard_error = function() {
       private$squared_standard_error
     },
 
     #' @description
-    #' Get standard error.
+    #' Get the standard error.
     #' @return numeric estimate of the standard error of the ratio.
     get_standard_error = function() {
       private$standard_error
     },
 
     #' @description
-    #' Get confidence intervals.
+    #' Get the confidence interval.
     #'
     #' @param alternative character string specifying the alternative
     #'   hypothesis, must be one of `"two.sided"` (default), `"greater"`, or
@@ -138,18 +138,19 @@ DeltaMethodForRatio <- R6::R6Class(
     # class methods -----------------------------------------------------------
 
     #' @description
-    #' Class Method to Compute the Expected Value of the Ratio Using the Delta
-    #' Method
+    #' Class method to compute the expected value of the ratio using the Delta
+    #' method.
     #'
-    #' @param mean1 description
-    #' @param mean2 description
-    #' @param var2 description
-    #' @param cov description
+    #' @param mean1 numeric value of the mean numerator of the ratio.
+    #' @param mean2 numeric value of the mean denominator of the ratio.
+    #' @param var2 numeric value of the variance of the denominator of the ratio.
+    #' @param cov numeric value of the covariance between the numerator and
+    #'   denominator of the ratio. The default is 0.
     #' @param bias_correction logical value indicating whether correction to the
     #'   mean of the metric is performed using the second-order term of the
     #'   Taylor expansion. The default is `TRUE`.
     #'
-    #' @return numeric estimate of the expected value of the ratio
+    #' @return numeric estimate of the expected value of the ratio.
     compute_expected_value = function(mean1, mean2, var2, cov = 0,
                                       bias_correction = TRUE) {
       expected_value <- mean1 / mean2
@@ -161,13 +162,14 @@ DeltaMethodForRatio <- R6::R6Class(
     },
 
     #' @description
-    #' Class Method to Compute the Variance of the Ratio Using the Delta Method
+    #' Class method to compute the variance of the ratio using the Delta method.
     #'
-    #' @param mean1 description
-    #' @param mean2 description
-    #' @param var1 description
-    #' @param var2 description
-    #' @param cov description
+    #' @param mean1 numeric value of the mean numerator of the ratio.
+    #' @param mean2 numeric value of the mean denominator of the ratio.
+    #' @param var1 numeric value of the variance of the numerator of the ratio.
+    #' @param var2 numeric value of the variance of the denominator of the ratio.
+    #' @param cov numeric value of the covariance between the numerator and
+    #'   denominator of the ratio. The default is 0.
     #'
     #' @return numeric estimate of the variance of the ratio
     compute_variance = function(mean1, mean2, var1, var2, cov = 0) {
@@ -175,11 +177,12 @@ DeltaMethodForRatio <- R6::R6Class(
     },
 
     #' @description
-    #' Class Method to Compute the Confidence Interval of the Ratio Using the
-    #' Delta Method
+    #' Class method to compute the confidence interval of the ratio using the
+    #' Delta method.
     #'
-    #' @param estimate description
-    #' @param standard_error description
+    #' @param mean numeric value of the estimated mean of the ratio.
+    #' @param standard_error numeric value of the estimated standard error of
+    #'   the mean of the ratio.
     #' @param alternative character string specifying the alternative
     #'   hypothesis, must be one of `"two.sided"` (default), `"greater"`, or
     #'   `"less"`. You can specify just the initial letter.
@@ -190,22 +193,22 @@ DeltaMethodForRatio <- R6::R6Class(
     #'   interval of the ratio.
     #'
     #' @importFrom stats qnorm
-    compute_confidence_interval = function(estimate, standard_error,
+    compute_confidence_interval = function(mean, standard_error,
                                            alternative = c("two.sided", "less", "greater"),
                                            conf_level = 0.95) {
       alternative <- match.arg(alternative)
 
       if (alternative == "two.sided") {
         p <- 1 - (1 - conf_level) / 2
-        lower <- estimate - qnorm(p) * standard_error
-        upper <- estimate + qnorm(p) * standard_error
+        lower <- mean - qnorm(p) * standard_error
+        upper <- mean + qnorm(p) * standard_error
       } else if (alternative == "less") {
         p <- conf_level
         lower <- -Inf
-        upper <- estimate + qnorm(p) * standard_error
+        upper <- mean + qnorm(p) * standard_error
       } else {
         p <- conf_level
-        lower <- estimate - qnorm(p) * standard_error
+        lower <- mean - qnorm(p) * standard_error
         upper <- Inf
       }
       confidence_interval <- c(lower, upper)
