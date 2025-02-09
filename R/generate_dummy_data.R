@@ -24,6 +24,12 @@
 #' @return data.frame with the columns user_id, group, and metric, where each
 #'   row represents a metric value for a page-view.
 #'
+#' @examples
+#' library(deltatest)
+#'
+#' set.seed(314)
+#' generate_dummy_data(n_user = 2000)
+#'
 #' @references
 #' - Deng, A., Lu, J., & Litz, J. (2017). Trustworthy Analysis of Online A/B
 #'   Tests: Pitfalls, challenges and solutions. *Proceedings of the Tenth ACM

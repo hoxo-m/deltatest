@@ -83,6 +83,20 @@ using the delta method. The Delta method is used to estimate the variance by
 accounting for the correlation between the numerator and denominator of ratio
 metrics.
 }
+\examples{
+library(dplyr)
+library(deltatest)
+
+n_user <- 2000
+
+set.seed(314)
+df <- deltatest::generate_dummy_data(n_user) |>
+  group_by(user_id, group) |>
+  summarise(click = sum(metric), pageview = n(), .groups = "drop")
+
+deltatest(df, click / pageview, by = group)
+
+}
 \references{
 \itemize{
 \item Deng, A., Knoblich, U., & Lu, J. (2018). Applying the Delta

@@ -45,6 +45,13 @@ row represents a metric value for a page-view.
 Generate random dummy data for simulation studies. For details, see Section
 4.3 in Deng et al. (2017).
 }
+\examples{
+library(deltatest)
+
+set.seed(314)
+generate_dummy_data(n_user = 2000)
+
+}
 \references{
 \itemize{
 \item Deng, A., Lu, J., & Litz, J. (2017). Trustworthy Analysis of Online A/B

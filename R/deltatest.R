@@ -54,6 +54,19 @@
 #'   \item{method}{a character string describing the method used.}
 #'   \item{data.name}{the name of the data.}
 #'
+#' @examples
+#' library(dplyr)
+#' library(deltatest)
+#'
+#' n_user <- 2000
+#'
+#' set.seed(314)
+#' df <- deltatest::generate_dummy_data(n_user) |>
+#'   group_by(user_id, group) |>
+#'   summarise(click = sum(metric), pageview = n(), .groups = "drop")
+#'
+#' deltatest(df, click / pageview, by = group)
+#'
 #' @references
 #' - Deng, A., Knoblich, U., & Lu, J. (2018). Applying the Delta
 #'   Method in Metric Analytics: A Practical Guide with Novel Ideas.
