@@ -81,7 +81,7 @@ deltatest <- function(data, formula, by, group_names = "auto",
   type <- match.arg(type)
   bias_correction <- as.logical(bias_correction)
   alternative <- match.arg(alternative)
-  if (is.na(conf.level) || length(conf.level) != 1 || conf.level < 0 || conf.level > 1) {
+  if (length(conf.level) >= 2 || is.na(conf.level) || conf.level < 0 || conf.level > 1) {
     stop("The 'conf.level' argument must be a single number between 0 and 1")
   } else {
     conf.level <- as.double(conf.level)
