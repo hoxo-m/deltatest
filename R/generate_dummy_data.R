@@ -1,27 +1,34 @@
 #' Generate Dummy Data
 #'
+#' Generate random dummy data for simulation studies. For details, see Section
+#' 4.3 in Deng et al. (2017).
 #'
-#'
-#' @param n_user integer value of the number of users.
+#' @param n_user integer value specifying the number of users included in the
+#'   generated data. Since multiple rows are generated for each user, the number
+#'   of rows in the data exceeds the number of users.
 #' @param model character string specifying the model that generates the
 #'   potential outcomes. It must be one of `"Bernoulli"` (default) or
 #'   `"normal"`. You can specify just the initial letter.
 #' @param xi numeric value specifying the treatment effect variation (TEV) under
 #'   the Bernoulli model, where \eqn{TEV = 2\xi}. This argument is ignored if
-#'   the `model` argument is set to `"normal"`.
+#'   the `model` argument is set to `"normal"`. The default is 0.
 #' @param sigma numeric value specifying the treatment effect variation (TEV)
 #'   under the normal model, where \eqn{TEV = \sigma}. This argument is ignored
-#'   if the `model` argument is set to `"Bernoulli"`.
+#'   if the `model` argument is set to `"Bernoulli"`. The default is 0.
 #' @param random_unit character string specifying the randomization unit. It
 #'   must be one of `"user"` (default), `"session"`, or `"pageview"`. You can
-#'   specify just the initial letter.
+#'   specify just the initial letter. The default is 0.
 #' @param treatment_ratio numeric value specifying the ratio assigned to
 #'   treatment. The default value is 0.5.
+#'
+#' @return data.frame with the columns user_id, group, and metric, where each
+#'   row represents a metric value for a page-view.
 #'
 #' @references
 #' - Deng, A., Lu, J., & Litz, J. (2017). Trustworthy Analysis of Online A/B
 #'   Tests: Pitfalls, challenges and solutions. *Proceedings of the Tenth ACM
 #'   International Conference on Web Search and Data Mining.*
+#'   \doi{10.1145/3018661.3018677}
 #'
 #' @importFrom stats rpois
 #'
@@ -30,11 +37,20 @@ generate_dummy_data <- function(
     n_user, model = c("Bernoulli", "normal"), xi = 0, sigma = 0,
     random_unit = c("user", "session", "pageview"), treatment_ratio = 0.5) {
 
-  # check arguments
+  # check arguments ---------------------------------------------------------
+  n_user <- as.integer(n_user)
   model <- match.arg(model)
+  xi <- as.double(xi)
+  sigma <- as.double(sigma)
   random_unit <- match.arg(random_unit)
+  treatment_ratio <- as.double(treatment_ratio)
 
-  # generate data
+  stopifnot(length(n_user) == 1L, n_user > 0)
+  stopifnot(length(xi) == 1L, xi >= 0)
+  stopifnot(length(sigma) == 1L, sigma >= 0)
+  stopifnot(length(treatment_ratio) == 1L, treatment_ratio > 0, treatment_ratio < 1)
+
+  # generate data -----------------------------------------------------------
   n_session <- rpois(n_user, 3) + 1L
   n_pageview <- n_session |> lapply(function(x) rpois(x, 3) + 1L) |> unlist()
 

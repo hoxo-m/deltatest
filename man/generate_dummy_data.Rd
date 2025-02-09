@@ -14,7 +14,9 @@ generate_dummy_data(
 )
 }
 \arguments{
-\item{n_user}{integer value of the number of users.}
+\item{n_user}{integer value specifying the number of users included in the
+generated data. Since multiple rows are generated for each user, the number
+of rows in the data exceeds the number of users.}
 
 \item{model}{character string specifying the model that generates the
 potential outcomes. It must be one of \code{"Bernoulli"} (default) or
@@ -22,26 +24,32 @@ potential outcomes. It must be one of \code{"Bernoulli"} (default) or
 
 \item{xi}{numeric value specifying the treatment effect variation (TEV) under
 the Bernoulli model, where \eqn{TEV = 2\xi}. This argument is ignored if
-the \code{model} argument is set to \code{"normal"}.}
+the \code{model} argument is set to \code{"normal"}. The default is 0.}
 
 \item{sigma}{numeric value specifying the treatment effect variation (TEV)
 under the normal model, where \eqn{TEV = \sigma}. This argument is ignored
-if the \code{model} argument is set to \code{"Bernoulli"}.}
+if the \code{model} argument is set to \code{"Bernoulli"}. The default is 0.}
 
 \item{random_unit}{character string specifying the randomization unit. It
 must be one of \code{"user"} (default), \code{"session"}, or \code{"pageview"}. You can
-specify just the initial letter.}
+specify just the initial letter. The default is 0.}
 
 \item{treatment_ratio}{numeric value specifying the ratio assigned to
 treatment. The default value is 0.5.}
 }
+\value{
+data.frame with the columns user_id, group, and metric, where each
+row represents a metric value for a page-view.
+}
 \description{
-Generate Dummy Data
+Generate random dummy data for simulation studies. For details, see Section
+4.3 in Deng et al. (2017).
 }
 \references{
 \itemize{
 \item Deng, A., Lu, J., & Litz, J. (2017). Trustworthy Analysis of Online A/B
 Tests: Pitfalls, challenges and solutions. \emph{Proceedings of the Tenth ACM
 International Conference on Web Search and Data Mining.}
+\doi{10.1145/3018661.3018677}
 }
 }
