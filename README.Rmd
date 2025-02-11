@@ -15,12 +15,43 @@ knitr::opts_chunk$set(
 )
 ```
 
-# deltatest
+# deltatest: Statistical Hypothesis Testing Using the Delta Method for Online A/B Testing
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-## Installation
+## 1. Overview
+
+Online A/B testing poses a significant practical challenge: the randomization unit often differs from the analysis unit. For instance, while control and treatment groups are typically assigned at the user level, evaluation metrics are frequently measured at a more detailed level, such as the click-through rate per page view. In this scenario, the randomization unit is the user, but the analysis unit is the page view. 
+
+This discrepancy raises concerns when performing statistical hypothesis tests, as within-user correlation may be present. Specifically, a single user can generate multiple page views, and some users may inherently have a higher likelihood of clicking than others, which may potentially violate the i.i.d. assumption required for hypothesis tests.
+
+To address this issue, Deng et al. (2018) proposes a statistical hypothesis testing method using the Delta method. This package has been developed to easily execute that method.
+
+First, we prepare a data frame that includes the number of clicks and page views aggregated for each user. This data frame also contains a column indicating whether each user was assigned to the control or treatment group.
+
+```{r prepare_data}
+library(dplyr)
+
+n_user <- 2000
+
+set.seed(314)
+data <- deltatest::generate_dummy_data(n_user) |> 
+  mutate(group = if_else(group == 0, "control", "treatment")) |>
+  group_by(user_id, group) |> 
+  summarise(clicks = sum(metric), pageviews = n(), .groups = "drop")
+data
+```
+
+To perform a statistical hypothesis test using the Delta method on this data, as follows:
+
+```{r}
+library(deltatest)
+
+deltatest(data, clicks / pageviews, by = group)
+```
+
+## 2. Installation
 
 You can install the development version of deltatest from [GitHub](https://github.com/) with:
 
@@ -47,7 +78,7 @@ df
 deltatest(df, click / pageview, by = group)
 ```
 
-```{r}
+```{r cache=TRUE}
 library(ggplot2)
 
 set.seed(314)
@@ -75,7 +106,7 @@ ggplot(df, aes(p, prop)) +
   xlab("p-value") + ylab("proportion")
 ```
 
-```{r}
+```{r cache=TRUE}
 set.seed(314)
 
 p_values <- NULL
@@ -101,14 +132,20 @@ ggplot(df, aes(p, prop)) +
   xlab("p-value") + ylab("proportion")
 ```
 
+## Related Work
+
+- [tidydelta: Estimation of Standard Errors using Delta Method](https://cran.r-project.org/package=tidydelta)
+
 ## References
 
 - Deng, A., Knoblich, U., & Lu, J. (2018). Applying the Delta Method in Metric
 Analytics: A Practical Guide with Novel Ideas. *Proceedings of the 24th ACM
 SIGKDD International Conference on Knowledge Discovery & Data Mining.*
+[doi:10.1145/3219819.3219919](https://doi.org/10.1145/3219819.3219919)
 - Deng, A., Lu, J., & Litz, J. (2017). Trustworthy Analysis of Online A/B Tests:
 Pitfalls, challenges and solutions. *Proceedings of the Tenth ACM International
 Conference on Web Search and Data Mining.*
+[doi:10.1145/3018661.3018677](https://doi.org/10.1145/3018661.3018677)
 - id:sz_dr (2018). Calculating the mean and variance of the ratio of random
 variables using the Delta method [in Japanese]. *If you are human, think more
 now.* https://www.szdrblog.info/entry/2018/11/18/154952
