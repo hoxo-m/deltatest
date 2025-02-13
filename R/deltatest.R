@@ -29,7 +29,7 @@
 #'   the initial letter.
 #' @param bias_correction logical value indicating whether correction to the
 #'   mean of the metric is performed using the second-order term of the Taylor
-#'   expansion. The default is `TRUE`.
+#'   expansion. The default is `FALSE`.
 #' @param alternative character string specifying the alternative hypothesis,
 #'   must be one of `"two.sided"` (default), `"greater"`, or `"less"`. You can
 #'   specify just the initial letter.
@@ -79,7 +79,7 @@
 #' @export
 deltatest <- function(data, formula, by, group_names = "auto",
                       type = c("difference", "relative_change"),
-                      bias_correction = TRUE,
+                      bias_correction = FALSE,
                       alternative = c("two.sided", "less", "greater"),
                       conf.level = 0.95, na.rm = FALSE, quiet = FALSE) {
   # check arguments ---------------------------------------------------------

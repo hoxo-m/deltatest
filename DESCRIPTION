@@ -1,7 +1,8 @@
 Type: Package
 Package: deltatest
-Title: Statistical Hypothesis Test Using the Delta Method
-Version: 0.0.0.9002
+Title: Statistical Hypothesis Testing Using the Delta Method for Online
+    A/B Testing
+Version: 0.0.0.9003
 Authors@R:
     person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre"))
 Description: Statistical hypothesis test using the Delta method for online
@@ -20,5 +21,5 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
-RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2

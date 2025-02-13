@@ -37,7 +37,7 @@ more now.} \url{https://www.szdrblog.info/entry/2018/11/18/154952}
 \subsection{Method \code{new()}}{
 Initialize a new DeltaMethodForRatio object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$new(numerator, denominator, bias_correction = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DeltaMethodForRatio$new(numerator, denominator, bias_correction = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -49,7 +49,7 @@ of the ratio.}
 
 \item{\code{bias_correction}}{logical value indicating whether correction to the
 mean of the metric is performed using the second-order term of the
-Taylor expansion. The default is \code{TRUE}.}
+Taylor expansion. The default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -176,7 +176,7 @@ method.
   mean2,
   var2,
   cov = 0,
-  bias_correction = TRUE
+  bias_correction = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -194,7 +194,7 @@ denominator of the ratio. The default is 0.}
 
 \item{\code{bias_correction}}{logical value indicating whether correction to the
 mean of the metric is performed using the second-order term of the
-Taylor expansion. The default is \code{TRUE}.}
+Taylor expansion. The default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }

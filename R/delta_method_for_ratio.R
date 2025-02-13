@@ -35,8 +35,8 @@ DeltaMethodForRatio <- R6::R6Class(
     #'   of the ratio.
     #' @param bias_correction logical value indicating whether correction to the
     #'   mean of the metric is performed using the second-order term of the
-    #'   Taylor expansion. The default is `TRUE`.
-    initialize = function(numerator, denominator, bias_correction = TRUE) {
+    #'   Taylor expansion. The default is `FALSE`.
+    initialize = function(numerator, denominator, bias_correction = FALSE) {
       size1 = length(numerator)
       size2 = length(denominator)
       stopifnot(size1 == size2)
@@ -148,11 +148,11 @@ DeltaMethodForRatio <- R6::R6Class(
     #'   denominator of the ratio. The default is 0.
     #' @param bias_correction logical value indicating whether correction to the
     #'   mean of the metric is performed using the second-order term of the
-    #'   Taylor expansion. The default is `TRUE`.
+    #'   Taylor expansion. The default is `FALSE`.
     #'
     #' @return numeric estimate of the expected value of the ratio.
     compute_expected_value = function(mean1, mean2, var2, cov = 0,
-                                      bias_correction = TRUE) {
+                                      bias_correction = FALSE) {
       expected_value <- mean1 / mean2
       if (bias_correction) {
         bias <- var2 * mean1 / (mean2^3) - cov / (mean2^2)
