@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 # deltatest: Statistical Hypothesis Testing Using the Delta Method for Online A/B Testing
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/hoxo-m/deltatest/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hoxo-m/deltatest/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## 1. Overview
