@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/hoxo-m/deltatest/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hoxo-m/deltatest/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## 1. Overview
@@ -70,13 +71,13 @@ deltatest(data, clicks / pageviews, by = group)
 #>  Two Sample Z-test Using the Delta Method
 #> 
 #> data:  clicks/pageviews by group
-#> Z = 0.89707, p-value = 0.3697
+#> Z = 0.31437, p-value = 0.7532
 #> alternative hypothesis: true difference in means between control and treatment is not equal to 0
 #> 95 percent confidence interval:
-#>  -0.009110998  0.024490289
+#>  -0.01410593  0.01949536
 #> sample estimates:
 #>   mean in control mean in treatment        difference 
-#>       0.241848567       0.249538212       0.007689645
+#>       0.245959325       0.248654038       0.002694713
 ```
 
 ## 2. Installation
@@ -123,13 +124,13 @@ deltatest(df, click / pageview, by = group)
 #>  Two Sample Z-test Using the Delta Method
 #> 
 #> data:  click/pageview by group
-#> Z = 0.89707, p-value = 0.3697
+#> Z = 0.31437, p-value = 0.7532
 #> alternative hypothesis: true difference in means between control and treatment is not equal to 0
 #> 95 percent confidence interval:
-#>  -0.009110998  0.024490289
+#>  -0.01410593  0.01949536
 #> sample estimates:
 #>   mean in control mean in treatment        difference 
-#>       0.241848567       0.249538212       0.007689645
+#>       0.245959325       0.248654038       0.002694713
 ```
 
 ``` r
