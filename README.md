@@ -10,23 +10,23 @@
 
 ## 1. Overview
 
-Online A/B testing poses a significant practical challenge: the
-randomization unit often differs from the analysis unit. For instance,
-while control and treatment groups are typically assigned at the user
-level, evaluation metrics are frequently measured at a more detailed
-level, such as the click-through rate per page view. In this scenario,
-the randomization unit is the user, but the analysis unit is the page
-view.
+In online A/B testing, we often face a significant practical challenge:
+the randomization unit differs from the analysis unit. In practice,
+control and treatment groups are typically assigned at the user level,
+while metrics—such as click-through rate—are generally measured at a
+finer level (e.g., per page view). In this scenario, the randomization
+unit is the user, while the analysis unit is the page view.
 
 This discrepancy raises concerns when performing statistical hypothesis
-tests, as within-user correlation may be present. Specifically, a single
-user can generate multiple page views, and some users may inherently
-have a higher likelihood of clicking than others, which may potentially
-violate the i.i.d. assumption required for hypothesis tests.
+testing, which relies on the assumption that data points are independent
+and identically distributed (i.i.d.). Specifically, a single user can
+generate multiple page views, and each user has a different probability
+of clicking. As a result, the data are correlated within users, thereby
+violating the i.i.d. assumption.
 
-To address this issue, Deng et al. (2018) proposes a statistical
+To address this issue, Deng et al. (2018) proposed a statistical
 hypothesis testing method using the Delta method. This package has been
-developed to easily execute that method.
+developed to make it easy to execute that method.
 
 First, we prepare a data frame that includes the number of clicks and
 page views aggregated for each user. This data frame also contains a
