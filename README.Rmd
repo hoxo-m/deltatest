@@ -4,14 +4,13 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%",
-  message = FALSE,
-  out.width = 600
+  out.width = 600,
+  message = FALSE
 )
 ```
 
@@ -25,7 +24,7 @@ knitr::opts_chunk$set(
 
 In online A/B testing, we often face a significant practical challenge: the randomization unit differs from the analysis unit. In practice, control and treatment groups are typically assigned at the user level, while metrics—such as click-through rate—are generally measured at a finer level (e.g., per page view). In this scenario, the randomization unit is the user, while the analysis unit is the page view.
 
-This discrepancy raises concerns when performing statistical hypothesis testing, which relies on the assumption that data points are independent and identically distributed (i.i.d.). Specifically, a single user can generate multiple page views, and each user has a different probability of clicking. As a result, the data are correlated within users, thereby violating the i.i.d. assumption.
+This discrepancy raises concerns when performing statistical hypothesis testing, which relies on the assumption that data points are independent and identically distributed (i.i.d.). Specifically, a single user can generate multiple page views, and each user may have a different probability of clicking. As a result, the data could be correlated within users, thereby violating the i.i.d. assumption.
 
 To address this issue, Deng et al. (2018) proposed a statistical hypothesis testing method using the Delta method. This package has been developed to make it easy to execute that method.
 
@@ -46,11 +45,16 @@ data
 
 To perform a statistical hypothesis test using the Delta method on this data, as follows:
 
-```{r}
+```{r execute}
 library(deltatest)
 
 deltatest(data, clicks / pageviews, by = group)
 ```
+
+When applied to data with within-user correlation, the standard Z-test yields p-values that deviate from the uniform distribution expected under the null hypothesis. In contrast, the Z-test using the Delta method produces p-values that conform to this expected uniform distribution.
+
+![](man/figures/README-p-values-from-z-test-1.png)
+![](man/figures/README-p-values-from-delta-method-1.png)
 
 ## 2. Installation
 
@@ -63,75 +67,8 @@ remotes::install_github("hoxo-m/deltatest")
 
 ## Example
 
-```{r example}
-library(dplyr)
-library(deltatest)
 
-n_user <- 2000
 
-set.seed(314)
-df <- generate_dummy_data(n_user) |> 
-  mutate(group = if_else(group == 0L, "control", "treatment")) |>
-  group_by(user_id, group) |> 
-  summarise(click = sum(metric), pageview = n(), .groups = "drop")
-df
-
-deltatest(df, click / pageview, by = group)
-```
-
-```{r cache=TRUE}
-library(ggplot2)
-
-set.seed(314)
-
-p_values <- NULL
-for (i in 1:5000) {
-  df <- generate_dummy_data(n_user) |> 
-    group_by(group) |> 
-    summarise(click = sum(metric), pageview = n(), .groups = "drop")
-  
-  result <- prop.test(df$click, df$pageview, correct = FALSE)
-  
-  p_values[i] <- result$p.value
-}
-
-df <- data.frame(p_value = p_values) |>
-  mutate(range = cut(p_value, breaks = seq(0, 1, by = 0.05))) |>
-  group_by(range) |>
-  summarise(p = factor(ceiling(max(p_value) * 20) / 20), n = n()) |>
-  mutate(prop = n / sum(n))
-ggplot(df, aes(p, prop)) +
-  geom_col() +
-  geom_hline(yintercept = 0.05, color = "red") +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.02), minor_breaks = NULL) +
-  xlab("p-value") + ylab("proportion")
-```
-
-```{r cache=TRUE}
-set.seed(314)
-
-p_values <- NULL
-for (i in 1:5000) {
-  df <- generate_dummy_data(n_user) |> 
-    group_by(user_id, group) |> 
-    summarise(click = sum(metric), pageview = n(), .groups = "drop")
-  
-  result <- deltatest(df, click / pageview, by = group)
-  
-  p_values[i] <- result$p.value
-}
-
-df <- data.frame(p_value = p_values) |>
-  mutate(range = cut(p_value, breaks = seq(0, 1, by = 0.05))) |>
-  group_by(range) |>
-  summarise(p = factor(ceiling(max(p_value) * 20) / 20), n = n()) |>
-  mutate(prop = n / sum(n))
-ggplot(df, aes(p, prop)) +
-  geom_col() +
-  geom_hline(yintercept = 0.05, color = "red") +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.01), minor_breaks = NULL) +
-  xlab("p-value") + ylab("proportion")
-```
 
 ## Related Work
 
