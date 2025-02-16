@@ -33,8 +33,10 @@ difference.
 <img src="man/figures/README-p-values-from-z-test-1.png" width="400" />
 
 To address this issue, Deng et al. (2018) proposed a statistical
-hypothesis testing method using the Delta method. This package has been
-developed to make it easy to execute that method.
+hypothesis testing method that replaces the variance estimation formula
+in the Z-test with an approximation using the Delta method, which
+accounts for within-user correlation. This package has been developed to
+make it easy to execute that method.
 
 First, we prepare a data frame that includes the number of clicks and
 page views aggregated for each user. This data frame also contains a
