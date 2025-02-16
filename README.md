@@ -11,18 +11,26 @@
 ## 1. Overview
 
 In online A/B testing, we often face a significant practical challenge:
-the randomization unit differs from the analysis unit. In practice,
-control and treatment groups are typically assigned at the user level,
-while metrics—such as click-through rate—are generally measured at a
-finer level (e.g., per page view). In this scenario, the randomization
-unit is the user, while the analysis unit is the page view.
+the randomization unit differs from the analysis unit. Typically,
+control and treatment groups are assigned at the user level, while
+metrics—such as click-through rate—are measured at a finer level (e.g.,
+per page view). In this scenario, the randomization unit is the user,
+while the analysis unit is the page view.
 
-This discrepancy raises concerns when performing statistical hypothesis
-testing, which relies on the assumption that data points are independent
-and identically distributed (i.i.d.). Specifically, a single user can
-generate multiple page views, and each user may have a different
-probability of clicking. As a result, the data could be correlated
-within users, thereby violating the i.i.d. assumption.
+This discrepancy raises concerns for statistical hypothesis testing,
+which assumes that data points are independent and identically
+distributed (i.i.d.). Specifically, a single user can generate multiple
+page views, and each user may have a different probability of clicking.
+As a result, the data may exhibit within-user correlation, thereby
+violating the i.i.d. assumption.
+
+When the standard Z-test is applied to such correlated data, the
+resulting p-values do not follow the expected uniform distribution under
+the null hypothesis. As a result, smaller p-values tend to occur more
+frequently, increasing the risk of falsely detecting a significant
+difference.
+
+<img src="man/figures/README-p-values-from-Z-test-1.png" width="400" />
 
 To address this issue, Deng et al. (2018) proposed a statistical
 hypothesis testing method using the Delta method. This package has been
@@ -80,14 +88,11 @@ deltatest(data, clicks / pageviews, by = group)
 #>       0.245959325       0.248654038       0.002694713
 ```
 
-When applied to data with within-user correlation, the standard Z-test
-yields p-values that deviate from the uniform distribution expected
-under the null hypothesis. In contrast, the Z-test using the Delta
-method produces p-values that conform to this expected uniform
-distribution.
+The Z-test using the Delta method yields p-values that follow the
+expected uniform distribution under the null hypothesis, even in the
+presence of correlation within the data.
 
-![](man/figures/README-p-values-from-z-test-1.png)
-![](man/figures/README-p-values-from-delta-method-1.png)
+<img src="man/figures/README-p-values-from-delta-method-1.png" width="400" />
 
 ## 2. Installation
 
