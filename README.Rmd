@@ -28,7 +28,7 @@ This discrepancy raises concerns for statistical hypothesis testing, which assum
 
 When the standard Z-test is applied to such correlated data, the resulting  p-values do not follow the expected uniform distribution under the null hypothesis. As a result, smaller p-values tend to occur more frequently, increasing the risk of falsely detecting a significant difference.
 
-```{r p-values-from-Z-test, echo=FALSE, fig.height=3, fig.width=4}
+```{r p-values-from-z-test, echo=FALSE, fig.height=3, fig.width=4}
 library(dplyr)
 library(ggplot2)
 

@@ -30,7 +30,7 @@ the null hypothesis. As a result, smaller p-values tend to occur more
 frequently, increasing the risk of falsely detecting a significant
 difference.
 
-<img src="man/figures/README-p-values-from-Z-test-1.png" width="400" />
+<img src="man/figures/README-p-values-from-z-test-1.png" width="400" />
 
 To address this issue, Deng et al. (2018) proposed a statistical
 hypothesis testing method using the Delta method. This package has been
