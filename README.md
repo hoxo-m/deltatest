@@ -14,8 +14,8 @@ In online A/B testing, we often face a significant practical challenge:
 the randomization unit differs from the analysis unit. Typically,
 control and treatment groups are assigned at the user level, while
 metrics—such as click-through rate—are measured at a finer level (e.g.,
-per page view). In this scenario, the randomization unit is the user,
-while the analysis unit is the page view.
+per page view). In this scenario, the randomization unit is a user,
+while the analysis unit is a page view.
 
 This discrepancy raises concerns for statistical hypothesis testing,
 which assumes that data points are independent and identically
@@ -27,16 +27,16 @@ violating the i.i.d. assumption.
 When the standard Z-test is applied to such correlated data, the
 resulting p-values do not follow the expected uniform distribution under
 the null hypothesis. As a result, smaller p-values tend to occur more
-frequently, increasing the risk of falsely detecting a significant
-difference.
+frequently despite there being no true difference, increasing the risk
+of falsely detecting a significant difference.
 
 <img src="man/figures/README-p-values-from-z-test-1.png" width="400" />
 
 To address this issue, Deng et al. (2018) proposed a statistical
-hypothesis testing method that replaces the variance estimation formula
-in the Z-test with an approximation using the Delta method, which
-accounts for within-user correlation. This package has been developed to
-make it easy to execute that method.
+hypothesis testing method that replaces the standard variance estimation
+formula in the Z-test with an approximate formula using the Delta
+method, which can account for within-user correlation. This package has
+been developed to make it easy to execute that method.
 
 First, we prepare a data frame that includes the number of clicks and
 page views aggregated for each user. This data frame also contains a
@@ -53,6 +53,7 @@ data <- deltatest::generate_dummy_data(n_user) |>
   mutate(group = if_else(group == 0, "control", "treatment")) |>
   group_by(user_id, group) |> 
   summarise(clicks = sum(metric), pageviews = n(), .groups = "drop")
+
 data
 #> # A tibble: 2,000 × 4
 #>    user_id group     clicks pageviews
@@ -106,14 +107,86 @@ You can install the development version of deltatest from
 remotes::install_github("hoxo-m/deltatest")
 ```
 
-## Example
+## 3. Details
 
-## Related Work
+### 3.1 Basic Usage
+
+The **deltatest** package provides the `deltatest` function to perform
+the statistical hypothesis testing using the Delta method, as proposed
+by Deng et al. (2018).
+
+To run `deltatest`, you need to prepare a data frame. It must include
+columns for the numerator and denominator of your metric, aggregated by
+each randomization unit (typically, the randomization unit is a user).
+For example:
+
+- If the metric is CTR, the numerator is the number of clicks, and the
+  denominator is the number of page views.
+- If the metric is CVR, the numerator is the number of converted
+  sessions, and the denominator is the number of sessions.
+
+The `generate_dummy_data` function provides
+
+``` r
+library(dplyr)
+
+n_user <- 2000
+
+data <- deltatest::generate_dummy_data(n_user) |>
+  group_by(user_id, group) |>
+  summarise(clicks = sum(metric), pageviews = n(), .groups = "drop")
+
+data
+#> # A tibble: 2,000 × 4
+#>    user_id group clicks pageviews
+#>      <int> <int>  <int>     <int>
+#>  1       1     1      7        39
+#>  2       2     1     12        20
+#>  3       3     1      1        14
+#>  4       4     1     15        23
+#>  5       5     1      1        26
+#>  6       6     0      1         7
+#>  7       7     1      1        12
+#>  8       8     1      0        24
+#>  9       9     0      4        11
+#> 10      10     1      0        10
+#> # ℹ 1,990 more rows
+```
+
+### 3.2 Expression Styles
+
+1.  Expression (NSE; non-standard evaluation)
+
+``` r
+deltatest(data, clicks / pageviews, by = group)
+```
+
+2.  Standard formula
+
+``` r
+deltatest(data, clicks / pageviews ~ group)
+```
+
+3.  Lambda formula
+
+``` r
+deltatest(data, ~ clicks / pageviews, by = group)
+```
+
+- With calculation (for all styles)
+
+``` r
+deltatest(data, pos / (pos + neg), by = group)
+```
+
+### 3.3 Information
+
+## 4. Related Work
 
 - [tidydelta: Estimation of Standard Errors using Delta
   Method](https://cran.r-project.org/package=tidydelta)
 
-## References
+## 5. References
 
 - Deng, A., Knoblich, U., & Lu, J. (2018). Applying the Delta Method in
   Metric Analytics: A Practical Guide with Novel Ideas. *Proceedings of
