@@ -14,8 +14,8 @@ In online A/B testing, we often face a significant practical challenge:
 the randomization unit differs from the analysis unit. Typically,
 control and treatment groups are assigned at the user level, while
 metrics—such as click-through rate—are measured at a finer level (e.g.,
-per page view). In this scenario, the randomization unit is a user,
-while the analysis unit is a page view.
+per page view). In this scenario, the randomization unit is user, while
+the analysis unit is page-view.
 
 This discrepancy raises concerns for statistical hypothesis testing,
 which assumes that data points are independent and identically
@@ -33,10 +33,10 @@ of falsely detecting a significant difference.
 <img src="man/figures/README-p-values-from-z-test-1.png" width="400" />
 
 To address this issue, Deng et al. (2018) proposed a statistical
-hypothesis testing method that replaces the standard variance estimation
-formula in the Z-test with an approximate formula using the Delta
-method, which can account for within-user correlation. This package has
-been developed to make it easy to execute that method.
+hypothesis testing method. It replaces the standard variance estimation
+formula in the Z-test with an approximate formula using the Delta method
+which can account for within-user correlation. This package has been
+developed to make it easy to execute that method.
 
 First, we prepare a data frame that includes the number of clicks and
 page views aggregated for each user. This data frame also contains a
