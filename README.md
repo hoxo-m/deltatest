@@ -155,7 +155,7 @@ data
 #> # ℹ 1,990 more rows
 ```
 
-### 3.2 `formula` argument
+### 3.2 `formula` and `by` argument
 
 1.  Standard formula
 
@@ -181,11 +181,9 @@ deltatest(data, clicks / pageviews, by = group)
 deltatest(data, pos / (pos + neg), by = group)
 ```
 
-### 3.3 `group` argument
+### 3.3 Other arguments
 
-### 3.4 Other arguments
-
-### 3.5 Return value
+### 3.4 Return value
 
 ``` r
 result <- deltatest(data, clicks / pageviews, by = group)
