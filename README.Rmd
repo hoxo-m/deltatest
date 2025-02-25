@@ -117,7 +117,7 @@ remotes::install_github("hoxo-m/deltatest")
 
 ## 3. Details
 
-The **deltatest** package provides the `deltatest` function for performing statistical hypothesis tests using the Delta method as proposed by Deng et al. (2018). In this section, we explain the function's arguments and return value.
+The **deltatest** package provides the `deltatest` function for performing statistical hypothesis tests using the Delta method as proposed by Deng et al. (2018). In this section, we explain the function's arguments and return value. For more details, refer to `help(deltatest)`.
 
 ### 3.1 `data` Argument
 
@@ -151,58 +151,63 @@ This data frame includes the `user_id` column, but this column is not required t
 
 The second argument, `formula`, and the third argument, `by`, specify which columns in the data frame represent the numerator, denominator, and group. There are three input styles available for the `formula` argument.
 
-1. Standard Formula
+#### 1. Standard Formula
 
 This is the popular formula format, where the left-hand side represents the target variable, and the right-hand side specifies the explanatory variable. In this case, the left-hand side should be in the form of `numerator / denominator`, and the right-hand side should be the column name representing the group. When using this style, you do not need to specify the `by` argument.
 
-```{r, eval=FALSE}
+```{r standard_formula, eval=FALSE}
 deltatest(data, clicks / pageviews ~ group)
 ```
 
-2. Lambda Formula
+#### 2. Lambda Formula
 
 This is a relatively new way to express functions within a formula, where the function is written on the right-hand side of the formula. Specifically, you can write the function as `~ numerator / denominator`. In this style, you must specify the name of the group column using the `by` argument.
 
-```{r, eval=FALSE}
+```{r lambda_formula, eval=FALSE}
 deltatest(data, ~ clicks / pageviews, by = group)
 ```
 
-3. NSE (Non-Standard Evaluation)
+#### 3. NSE (Non-Standard Evaluation)
 
 In this style, you can simply write `numerator / denominator`. The input is parsed using R's non-standard evaluation (NSE) feature. This style requires you to specify the name of the group column using the `by` argument.
 
-```{r, eval=FALSE}
+```{r NSE, eval=FALSE}
 deltatest(data, clicks / pageviews, by = group)
 ```
 
-- With Calculation (Applicable to All Styles)
+#### With Calculation (Applicable to All Styles)
 
 All styles accept calculations. For example, if your data frame contains only columns for the positive count and negative count, you can express the metric like as:
 
-```{r, eval=FALSE}
+```{r with_calculation, eval=FALSE}
 deltatest(data, pos / (pos + neg), by = group)
 ```
 
-### 3.3 Other arguments
+### 3.3 Other Arguments
 
-### 3.4 Return value
+#### `group_names`
 
-```{r}
+For this argument, list the two types of elements in the group column in the order of control and treatment. By default, the function behaves as though the types are sorted in dictionary order, and this behavior will be displayed in a message. To suppress the message, set the `quiet` argument to `TRUE`.
+
+#### `type`
+
+By default, `deltatest` tests the difference between two groups, but if you specify `'relative_change'` for this argument, it will test the rate of change: $(\mu_{t} - \mu_{c}) / \mu_{c}$, where $\mu_c$ and $\mu_t$ represent the mean values of the control group and the treatment group, respectively.
+
+### 3.4 Return Value
+
+The return value of `deltatest` is an object of class `htest`.
+
+```{r return_value}
 result <- deltatest(data, clicks / pageviews, by = group)
 result
 ```
 
-```{r}
-library(broom)
+This object contains the p-value, the confidence interval, and more. 
 
-tidy(result)
-```
+```{r return_value_detail}
+result$p.value
 
-```{r, fig.height=3, fig.width=4}
-result$info
-
-ggplot(result$info, aes(group, mean)) +
-  geom_pointrange(aes(ymin = lower, ymax = upper))
+result$conf.int
 ```
 
 ## 4. Related Work

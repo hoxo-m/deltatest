@@ -113,7 +113,8 @@ remotes::install_github("hoxo-m/deltatest")
 The **deltatest** package provides the `deltatest` function for
 performing statistical hypothesis tests using the Delta method as
 proposed by Deng et al. (2018). In this section, we explain the
-function’s arguments and return value.
+function’s arguments and return value. For more details, refer to
+`help(deltatest)`.
 
 ### 3.1 `data` Argument
 
@@ -171,7 +172,7 @@ which columns in the data frame represent the numerator, denominator,
 and group. There are three input styles available for the `formula`
 argument.
 
-1.  Standard Formula
+#### 1. Standard Formula
 
 This is the popular formula format, where the left-hand side represents
 the target variable, and the right-hand side specifies the explanatory
@@ -184,7 +185,7 @@ specify the `by` argument.
 deltatest(data, clicks / pageviews ~ group)
 ```
 
-2.  Lambda Formula
+#### 2. Lambda Formula
 
 This is a relatively new way to express functions within a formula,
 where the function is written on the right-hand side of the formula.
@@ -196,7 +197,7 @@ In this style, you must specify the name of the group column using the
 deltatest(data, ~ clicks / pageviews, by = group)
 ```
 
-3.  NSE (Non-Standard Evaluation)
+#### 3. NSE (Non-Standard Evaluation)
 
 In this style, you can simply write `numerator / denominator`. The input
 is parsed using R’s non-standard evaluation (NSE) feature. This style
@@ -207,7 +208,7 @@ argument.
 deltatest(data, clicks / pageviews, by = group)
 ```
 
-- With Calculation (Applicable to All Styles)
+#### With Calculation (Applicable to All Styles)
 
 All styles accept calculations. For example, if your data frame contains
 only columns for the positive count and negative count, you can express
@@ -217,9 +218,27 @@ the metric like as:
 deltatest(data, pos / (pos + neg), by = group)
 ```
 
-### 3.3 Other arguments
+### 3.3 Other Arguments
 
-### 3.4 Return value
+#### `group_names`
+
+For this argument, list the two types of elements in the group column in
+the order of control and treatment. By default, the function behaves as
+though the types are sorted in dictionary order, and this behavior will
+be displayed in a message. To suppress the message, set the `quiet`
+argument to `TRUE`.
+
+#### `type`
+
+By default, `deltatest` tests the difference between two groups, but if
+you specify `'relative_change'` for this argument, it will test the rate
+of change: $`(\mu_{t} - \mu_{c}) / \mu_{c}`$, where $`\mu_c`$ and
+$`\mu_t`$ represent the mean values of the control group and the
+treatment group, respectively.
+
+### 3.4 Return Value
+
+The return value of `deltatest` is an object of class `htest`.
 
 ``` r
 result <- deltatest(data, clicks / pageviews, by = group)
@@ -237,28 +256,17 @@ result
 #>       0.245959325       0.248654038       0.002694713
 ```
 
-``` r
-library(broom)
-
-tidy(result)
-#> # A tibble: 1 × 9
-#>   estimate1 estimate2 estimate3 statistic p.value conf.low conf.high method     
-#>       <dbl>     <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl> <chr>      
-#> 1     0.246     0.249   0.00269     0.314   0.753  -0.0141    0.0195 Two Sample…
-#> # ℹ 1 more variable: alternative <chr>
-```
+This object contains the p-value, the confidence interval, and more.
 
 ``` r
-result$info
-#>   group size    x     n      mean        var          se     lower     upper
-#> 1     0 1044 4124 16767 0.2459593 0.03625455 0.005892927 0.2344094 0.2575092
-#> 2     1  956 3741 15045 0.2486540 0.03704608 0.006225041 0.2364532 0.2608549
+result$p.value
+#> [1] 0.7532436
 
-ggplot(result$info, aes(group, mean)) +
-  geom_pointrange(aes(ymin = lower, ymax = upper))
+result$conf.int
+#> [1] -0.01410593  0.01949536
+#> attr(,"conf.level")
+#> [1] 0.95
 ```
-
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="400" />
 
 ## 4. Related Work
 
