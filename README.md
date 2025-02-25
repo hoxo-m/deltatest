@@ -230,11 +230,11 @@ argument to `TRUE`.
 
 #### `type`
 
-By default, `deltatest` tests the difference between two groups, but if
-you specify `'relative_change'` for this argument, it will test the rate
-of change: $`(\mu_{t} - \mu_{c}) / \mu_{c}`$, where $`\mu_c`$ and
-$`\mu_t`$ represent the mean values of the control group and the
-treatment group, respectively.
+By default, `deltatest` tests the difference between two groups. If you
+specify `'relative_change'` for this argument, it tests the rate of
+change: $`(\mu_{t} - \mu_{c}) / \mu_{c}`$ where $`\mu_c`$ and $`\mu_t`$
+represent the mean values of the control group and the treatment group,
+respectively.
 
 ### 3.4 Return Value
 
