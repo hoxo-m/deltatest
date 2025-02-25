@@ -21,7 +21,7 @@ This discrepancy raises concerns for statistical hypothesis testing,
 which assumes that data points are independent and identically
 distributed (i.i.d.). Specifically, a single user can generate multiple
 page-views, and each user may have a different probability of clicking.
-As a result, the data may exhibit within-user correlation, thereby
+Consequently, the data may exhibit within-user correlation, thereby
 violating the i.i.d. assumption.
 
 When the standard Z-test is applied to such correlated data, the
@@ -39,10 +39,10 @@ formula derived via the Delta method, which can account for within-user
 correlation. To simplify the application of this method, the
 **deltatest** package has been developed.
 
-First, we prepare a data frame that includes columns of the number of
-clicks and page-views aggregated for each user. This data frame also
-contains a column indicating whether each user was assigned to the
-control or treatment group.
+To see how to use this package, we prepare a data frame that includes
+columns of the number of clicks and page-views aggregated for each user.
+This data frame also contains a column indicating whether each user was
+assigned to the control or treatment group.
 
 ``` r
 library(dplyr)
@@ -100,7 +100,7 @@ correlation is present.
 
 ## 2. Installation
 
-You can install the development version of deltatest from
+You can install the development version of **deltatest** from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -110,23 +110,29 @@ remotes::install_github("hoxo-m/deltatest")
 
 ## 3. Details
 
-The **deltatest** package provides the `deltatest` function to perform
-the statistical hypothesis testing using the Delta method, as proposed
-by Deng et al. (2018).
+The **deltatest** package provides the `deltatest` function for
+performing statistical hypothesis tests using the Delta method as
+proposed by Deng et al. (2018). In this section, we explain the
+function’s arguments and return value.
 
-### 3.1 `data` argument
+### 3.1 `data` Argument
 
-To run `deltatest`, you need to prepare a data frame. It must include
-columns for the numerator and denominator of your metric, aggregated by
-each randomization unit (typically, the randomization unit is a user).
-For example:
+To run `deltatest`, you need to prepare an appropriately aggregated data
+frame. This data frame must include columns for the numerator and
+denominator of your metric, aggregated for each randomization unit
+(typically, each user). For example:
 
-- If the metric is CTR, the numerator is the number of clicks, and the
-  denominator is the number of page views.
-- If the metric is CVR, the numerator is the number of converted
-  sessions, and the denominator is the number of sessions.
+- If your metric is CTR per page-view, the numerator is the number of
+  clicks, and the denominator is the number of page-views.
+- If your metric is CVR per session, the numerator is the number of
+  conversions (or converted sessions), and the denominator is the number
+  of sessions.
 
-The `generate_dummy_data` function provides
+Note that the denominator should be the same as the unit of analysis.
+
+The **deltatest** package provides the `generate_dummy_data` function to
+create dummy data. It generates metric values per page-view, so you need
+to aggregate by user.
 
 ``` r
 library(dplyr)
@@ -155,27 +161,57 @@ data
 #> # ℹ 1,990 more rows
 ```
 
-### 3.2 `formula` and `by` argument
+This data frame includes the `user_id` column, but this column is not
+required to run `deltatest`.
 
-1.  Standard formula
+### 3.2 `formula` and `by` Arguments
+
+The second argument, `formula`, and the third argument, `by`, specify
+which columns in the data frame represent the numerator, denominator,
+and group. There are three input styles available for the `formula`
+argument.
+
+1.  Standard Formula
+
+This is the popular formula format, where the left-hand side represents
+the target variable, and the right-hand side specifies the explanatory
+variable. In this case, the left-hand side should be in the form of
+`numerator / denominator`, and the right-hand side should be the column
+name representing the group. When using this style, you do not need to
+specify the `by` argument.
 
 ``` r
 deltatest(data, clicks / pageviews ~ group)
 ```
 
-2.  Lambda formula
+2.  Lambda Formula
+
+This is a relatively new way to express functions within a formula,
+where the function is written on the right-hand side of the formula.
+Specifically, you can write the function as `~ numerator / denominator`.
+In this style, you must specify the name of the group column using the
+`by` argument.
 
 ``` r
 deltatest(data, ~ clicks / pageviews, by = group)
 ```
 
-3.  Expression (NSE; non-standard evaluation)
+3.  NSE (Non-Standard Evaluation)
+
+In this style, you can simply write `numerator / denominator`. The input
+is parsed using R’s non-standard evaluation (NSE) feature. This style
+requires you to specify the name of the group column using the `by`
+argument.
 
 ``` r
 deltatest(data, clicks / pageviews, by = group)
 ```
 
-- With calculation (for all styles)
+- With Calculation (Applicable to All Styles)
+
+All styles accept calculations. For example, if your data frame contains
+only columns for the positive count and negative count, you can express
+the metric like as:
 
 ``` r
 deltatest(data, pos / (pos + neg), by = group)
