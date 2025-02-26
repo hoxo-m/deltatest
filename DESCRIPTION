@@ -3,13 +3,15 @@ Package: deltatest
 Title: Statistical Hypothesis Testing Using the Delta Method for Online
     A/B Testing
 Version: 0.0.0.9004
-Authors@R:
-    person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre")),
+    person("Shinichi", "Takayanagi", , "shinichi.takayanagi@gmail.com", role = "med")
+  )
 Description: Statistical hypothesis testing using the Delta method as
     proposed by Deng et al. (2018) <doi:10.1145/3219819.3219919>. This
-    method replaces the standard variance estimation formula in the
-    Z-test with an approximate formula derived via the Delta method, which
-    can account for within-user correlation.
+    method replaces the standard variance estimation formula in the Z-test
+    with an approximate formula derived via the Delta method, which can
+    account for within-user correlation.
 License: file LICENSE
 Depends: 
     R (>= 4.1.0)
@@ -21,8 +23,8 @@ Imports:
 Suggests: 
     dplyr,
     ggplot2,
-    knit,
-    markdown,
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
