@@ -12,7 +12,9 @@ Description: Statistical hypothesis testing using the Delta method as
     method replaces the standard variance estimation formula in the Z-test
     with an approximate formula derived via the Delta method, which can
     account for within-user correlation.
-License: file LICENSE
+License: MIT + file LICENSE
+URL: https://github.com/hoxo-m/deltatest
+BugReports: https://github.com/hoxo-m/deltatest/issues
 Depends: 
     R (>= 4.1.0)
 Imports:
