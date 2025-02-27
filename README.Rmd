@@ -108,7 +108,13 @@ ggplot(df, aes(p, prop)) +
 
 ## 2. Installation
 
-You can install the development version of **deltatest** from [GitHub](https://github.com/) with:
+You can install the **deltatest** package from [CRAN](https://cran.r-project.org/package=deltatest).
+
+```{r install_cran, eval=FALSE}
+install.packages("deltatest")
+```
+
+You can also install the development version from [GitHub](https://github.com/) with:
 
 ```{r install_github, eval=FALSE}
 # install.packages("remotes")
