@@ -100,7 +100,14 @@ correlation is present.
 
 ## 2. Installation
 
-You can install the development version of **deltatest** from
+You can install the **deltatest** package from
+[CRAN](https://cran.r-project.org/package=deltatest).
+
+``` r
+install.packages("deltatest")
+```
+
+You can also install the development version from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -230,9 +237,8 @@ will display a message to that effect. To suppress the message, set the
 
 By default, `deltatest` tests the difference between two groups. If you
 specify `type = 'relative_change'`, it tests the rate of change, i.e.,
-$`(\mu_{t} - \mu_{c}) / \mu_{c}`$ where $`\mu_c`$ and $`\mu_t`$
-represent the mean values of the control group and the treatment group,
-respectively.
+$(\mu_{t} - \mu_{c}) / \mu_{c}$ where $\mu_c$ and $\mu_t$ represent the
+mean values of the control group and the treatment group, respectively.
 
 ### 3.4 Return Value
 
