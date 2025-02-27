@@ -26,7 +26,7 @@ In online A/B testing, we often face a significant practical challenge: the rand
 
 This discrepancy raises concerns for statistical hypothesis testing, which assumes that data points are independent and identically distributed (i.i.d.). Specifically, a single user can generate multiple page-views, and each user may have a different probability of clicking. Consequently, the data may exhibit within-user correlation, thereby violating the i.i.d. assumption.
 
-When the standard Z-test is applied to such correlated data, the resulting  p-values do not follow the expected uniform distribution under the null hypothesis. As a result, smaller p-values tend to occur more frequently despite there being no true difference, increasing the risk of falsely detecting a significant difference.
+When the standard Z-test is applied to such correlated data, the resulting  p-values do not follow the expected uniform distribution under the null hypothesis. As a result, smaller p-values tend to occur more frequently even when there is no true difference, increasing the risk of falsely detecting a significant difference.
 
 ```{r p-values-from-z-test, echo=FALSE, fig.height=3, fig.width=4}
 library(dplyr)
@@ -59,9 +59,9 @@ ggplot(df, aes(p, prop)) +
         plot.title = element_text(size = 11))
 ```
 
-To address this problem, Deng et al. (2018) proposed a modified statistical hypothesis testing method. This approach replaces the standard variance estimation formula in the Z-test with an approximate formula derived via the Delta method, which can account for within-user correlation. To simplify the application of this method, the **deltatest** package has been developed.
+To address this problem, Deng et al. (2018) proposed a modified statistical hypothesis testing method. Their approach replaces the standard variance estimation formula in the Z-test with an approximate formula derived via the Delta method, which accounts for within-user correlation. To simplify the application of this method, the **deltatest** package has been developed.
 
-To see how to use this package, we prepare a data frame that includes columns of the number of clicks and page-views aggregated for each user. This data frame also contains a column indicating whether each user was assigned to the control or treatment group.
+To illustrate how to use this package, we prepare a data frame that includes columns for the number of clicks and page-views aggregated for each user. This data frame also contains a column indicating whether each user was assigned to the control or treatment group.
 
 ```{r prepare_data}
 library(dplyr)
@@ -77,7 +77,7 @@ data <- deltatest::generate_dummy_data(n_user) |>
 data
 ```
 
-To perform a statistical hypothesis test using the Delta method on this data, as follows:
+The statistical hypothesis test using the Delta method can then be performed on this data as follows:
 
 ```{r execute}
 library(deltatest)
@@ -117,20 +117,18 @@ remotes::install_github("hoxo-m/deltatest")
 
 ## 3. Details
 
-The **deltatest** package provides the `deltatest` function for performing statistical hypothesis tests using the Delta method as proposed by Deng et al. (2018). In this section, we explain the function's arguments and return value. For more details, refer to `help(deltatest)`.
+The **deltatest** package provides the `deltatest` function for performing statistical hypothesis tests using the Delta method as proposed by Deng et al. (2018). In this section, we explain the function's arguments and its return value.
 
 ### 3.1 `data` Argument
 
-To run `deltatest`, you need to prepare an appropriately aggregated data frame.
-This data frame must include columns for the numerator and denominator of your metric, aggregated for each randomization unit (typically, each user).
-For example:
+To run `deltatest`, you need to prepare an appropriately aggregated data frame. This data frame must include columns for the numerator and denominator of your metric, aggregated for each randomization unit (typically, each user). For example:
 
-- If your metric is CTR per page-view, the numerator is the number of clicks, and the denominator is the number of page-views.
-- If your metric is CVR per session, the numerator is the number of conversions (or converted sessions), and the denominator is the number of sessions.
+- If your metric is click-through rate per page-view, the numerator is the number of clicks, and the denominator is the number of page-views.
+- If your metric is conversion rate per session, the numerator is the number of conversions (or converted sessions), and the denominator is the number of sessions.
 
-Note that the denominator should be the same as the unit of analysis.
+Note that the denominator should match the analysis unit.
 
-The **deltatest** package provides the `generate_dummy_data` function to create dummy data. It generates metric values per page-view, so you need to aggregate by user.
+The **deltatest** package provides the `generate_dummy_data` function to create dummy data. It generates metric values per page-view, so you need to aggregate the data by user.
 
 ```{r generate_dummy_data}
 library(dplyr)
@@ -153,7 +151,7 @@ The second argument, `formula`, and the third argument, `by`, specify which colu
 
 #### 1. Standard Formula
 
-This is the popular formula format, where the left-hand side represents the target variable, and the right-hand side specifies the explanatory variable. In this case, the left-hand side should be in the form of `numerator / denominator`, and the right-hand side should be the column name representing the group. When using this style, you do not need to specify the `by` argument.
+This is the common formula format, where the left-hand side represents the target variable, and the right-hand side specifies the explanatory variable. In this case, the left-hand side should be of the form `numerator / denominator`, and the right-hand side should be the column name representing the group. When using this style, you do not need to specify the `by` argument.
 
 ```{r standard_formula, eval=FALSE}
 deltatest(data, clicks / pageviews ~ group)
@@ -161,7 +159,7 @@ deltatest(data, clicks / pageviews ~ group)
 
 #### 2. Lambda Formula
 
-This is a relatively new way to express functions within a formula, where the function is written on the right-hand side of the formula. Specifically, you can write the function as `~ numerator / denominator`. In this style, you must specify the name of the group column using the `by` argument.
+This is a relatively new way to express functions within a formula, where the function is written on the right-hand side of the formula. Specifically, you can write the function as `~ numerator / denominator`. In this style, you must specify the group column using the `by` argument.
 
 ```{r lambda_formula, eval=FALSE}
 deltatest(data, ~ clicks / pageviews, by = group)
@@ -169,7 +167,7 @@ deltatest(data, ~ clicks / pageviews, by = group)
 
 #### 3. NSE (Non-Standard Evaluation)
 
-In this style, you can simply write `numerator / denominator`. The input is parsed using R's non-standard evaluation (NSE) feature. This style requires you to specify the name of the group column using the `by` argument.
+In this style, you can simply write `numerator / denominator`. The input is parsed using R's non-standard evaluation (NSE) feature, and you must specify the group column using the `by` argument.
 
 ```{r NSE, eval=FALSE}
 deltatest(data, clicks / pageviews, by = group)
@@ -177,7 +175,7 @@ deltatest(data, clicks / pageviews, by = group)
 
 #### With Calculation (Applicable to All Styles)
 
-All styles accept calculations. For example, if your data frame contains only columns for the positive count and negative count, you can express the metric like as:
+All styles accept calculations. For example, if your data frame contains only columns for the positive count and negative count, you can express the metric as follows:
 
 ```{r with_calculation, eval=FALSE}
 deltatest(data, pos / (pos + neg), by = group)
@@ -187,11 +185,11 @@ deltatest(data, pos / (pos + neg), by = group)
 
 #### `group_names`
 
-For this argument, list the two types of elements in the group column in the order of control and treatment. By default, the function behaves as though the types are sorted in dictionary order, and this behavior will be displayed in a message. To suppress the message, set the `quiet` argument to `TRUE`.
+For this argument, list the two types of elements in the group column in the order of control and treatment. By default, the function assumes that the types are specified in dictionary order for this argument and will display a message to that effect. To suppress the message, set the `quiet` argument to `TRUE`.
 
 #### `type`
 
-By default, `deltatest` tests the difference between two groups. If you specify `'relative_change'` for this argument, it tests the rate of change: $(\mu_{t} - \mu_{c}) / \mu_{c}$ where $\mu_c$ and $\mu_t$ represent the mean values of the control group and the treatment group, respectively.
+By default, `deltatest` tests the difference between two groups. If you specify `type = 'relative_change'`, it tests the rate of change, i.e., $(\mu_{t} - \mu_{c}) / \mu_{c}$ where $\mu_c$ and $\mu_t$ represent the mean values of the control group and the treatment group, respectively.
 
 ### 3.4 Return Value
 
@@ -202,13 +200,17 @@ result <- deltatest(data, clicks / pageviews, by = group)
 result
 ```
 
-This object contains the p-value, the confidence interval, and more. 
+This object contains the estimates, the p-value, the confidence interval, and more. 
 
 ```{r return_value_detail}
+result$estimate
+
 result$p.value
 
 result$conf.int
 ```
+
+For more details, refer to `help(deltatest)`.
 
 ## 4. Related Work
 
