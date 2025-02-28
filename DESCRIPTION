@@ -1,10 +1,9 @@
 Type: Package
 Package: deltatest
-Title: Statistical Hypothesis Testing Using the Delta Method for Online
-    A/B Testing
-Version: 0.0.0.9004
+Title: Statistical Hypothesis Testing Using the Delta Method
+Version: 0.0.0.9008
 Authors@R: c(
-    person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre")),
+    person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre", "cph")),
     person("Shinichi", "Takayanagi", , "shinichi.takayanagi@gmail.com", role = "med")
   )
 Description: Statistical hypothesis testing using the Delta method as
@@ -30,5 +29,6 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
+Language: en-US
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
