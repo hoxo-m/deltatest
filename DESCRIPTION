@@ -1,7 +1,7 @@
 Type: Package
 Package: deltatest
 Title: Statistical Hypothesis Testing Using the Delta Method
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: c(
     person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre", "cph")),
     person("Shinichi", "Takayanagi", , "shinichi.takayanagi@gmail.com", role = "med")
