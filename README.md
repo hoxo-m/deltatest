@@ -183,9 +183,9 @@ argument.
 This is the common formula format, where the left-hand side represents
 the target variable, and the right-hand side specifies the explanatory
 variable. In this case, the left-hand side should be of the form
-`numerator / denominator`, and the right-hand side should be the column
-name representing the group. When using this style, you do not need to
-specify the `by` argument.
+`numerator / denominator`, and the right-hand side should be the group
+column name. When using this style, you do not need to specify the `by`
+argument.
 
 ``` r
 deltatest(data, clicks / pageviews ~ group)
@@ -295,7 +295,7 @@ For more details, refer to `help(deltatest)`.
   A/B Tests: Pitfalls, challenges and solutions. *Proceedings of the
   Tenth ACM International Conference on Web Search and Data Mining.*
   [doi:10.1145/3018661.3018677](https://doi.org/10.1145/3018661.3018677)
-- id:sz_dr (2018). Calculating the mean and variance of the ratio of
-  random variables using the Delta method \[in Japanese\]. *If you are
-  human, think more now.*
+- id:sz_dr (2018). Calculating the Mean and Variance of the Ratio of
+  Random Variables Using the Delta Method \[in Japanese\]. *If You’re
+  Human, Think More Now.*
   <https://www.szdrblog.info/entry/2018/11/18/154952>
