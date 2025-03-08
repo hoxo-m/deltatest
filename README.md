@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![CRAN-version](https://www.r-pkg.org/badges/version/deltatest)](https://cran.r-project.org/package=deltatest)
+[![CRAN-downloads](https://cranlogs.r-pkg.org/badges/deltatest)](https://cran.r-project.org/package=deltatest)
 [![R-CMD-check](https://github.com/hoxo-m/deltatest/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hoxo-m/deltatest/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
