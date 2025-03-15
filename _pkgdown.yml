@@ -1,4 +1,15 @@
 url: https://hoxo-m.github.io/deltatest/
+
+authors:
+  Koji Makiyama:
+    href: https://hoxo-m.github.io/blog/
+
 template:
   bootstrap: 5
+  math-rendering: mathjax
+  light-switch: true
 
+news:
+  releases:
+  - text: "Version 0.1.0"
+    href: https://hoxo-m.github.io/blog/posts/deltatest/
