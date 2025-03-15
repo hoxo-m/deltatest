@@ -32,7 +32,7 @@ the null hypothesis. As a result, smaller p-values tend to occur more
 frequently even when there is no true difference, increasing the risk of
 falsely detecting a significant difference.
 
-<img src="man/figures/README-p-values-from-z-test-1.png" width="400" />
+<img src="man/figures/README-p-values-from-z-test-1.png" alt="p-values from standard Z-test on correlated data" width="400" />
 
 To address this problem, Deng et al. (2018) proposed a modified
 statistical hypothesis testing method. Their approach replaces the
@@ -98,7 +98,7 @@ This version of the Z-test yields p-values that follow the expected
 uniform distribution under the null hypothesis, even when within-user
 correlation is present.
 
-<img src="man/figures/README-p-values-from-delta-method-1.png" width="400" />
+<img src="man/figures/README-p-values-from-delta-method-1.png" alt="p-values from Z-test with Delta method on correlated data" width="400" />
 
 ## 2. Installation
 
