@@ -57,7 +57,7 @@
 <p>In online A/B testing, we often face a significant practical challenge: the randomization unit differs from the analysis unit. Typically, control and treatment groups are randomly assigned at the user level, while metrics—such as click-through rate—are measured at a more granular level (e.g., per page-view). In this case, the randomization unit is user, but the analysis unit is page-view.</p>
 <p>This discrepancy raises concerns for statistical hypothesis testing, which assumes that data points are independent and identically distributed (i.i.d.). Specifically, a single user can generate multiple page-views, and each user may have a different probability of clicking. Consequently, the data may exhibit within-user correlation, thereby violating the i.i.d. assumption.</p>
 <p>When the standard Z-test is applied to such correlated data, the resulting p-values do not follow the expected uniform distribution under the null hypothesis. As a result, smaller p-values tend to occur more frequently even when there is no true difference, increasing the risk of falsely detecting a significant difference.</p>
-<p><img src="reference/figures/README-p-values-from-z-test-1.png" width="400"></p>
+<p><img src="reference/figures/README-p-values-from-z-test-1.png" alt="p-values from standard Z-test on correlated data" width="400"></p>
 <p>To address this problem, Deng et al. (2018) proposed a modified statistical hypothesis testing method. Their approach replaces the standard variance estimation formula in the Z-test with an approximate formula derived via the Delta method, which accounts for within-user correlation. To simplify the application of this method, the <strong>deltatest</strong> package has been developed.</p>
 <p>To illustrate how to use this package, we prepare a data frame that includes columns for the number of clicks and page-views aggregated for each user. This data frame also contains a column indicating whether each user was assigned to the control or treatment group.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -103,7 +103,7 @@
 <span><span class="co">#&gt;   mean in control mean in treatment        difference </span></span>
 <span><span class="co">#&gt;       0.245959325       0.248654038       0.002694713</span></span></code></pre></div>
 <p>This version of the Z-test yields p-values that follow the expected uniform distribution under the null hypothesis, even when within-user correlation is present.</p>
-<p><img src="reference/figures/README-p-values-from-delta-method-1.png" width="400"></p>
+<p><img src="reference/figures/README-p-values-from-delta-method-1.png" alt="p-values from Z-test with Delta method on correlated data" width="400"></p>
 </div>
 <div class="section level2">
 <h2 id="id_2-installation">2. Installation<a class="anchor" aria-label="anchor" href="#id_2-installation"></a>
