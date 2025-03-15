@@ -12,7 +12,7 @@ Description: Statistical hypothesis testing using the Delta method as
     with an approximate formula derived via the Delta method, which can
     account for within-user correlation.
 License: MIT + file LICENSE
-URL: https://github.com/hoxo-m/deltatest
+URL: https://github.com/hoxo-m/deltatest, https://hoxo-m.github.io/deltatest/
 BugReports: https://github.com/hoxo-m/deltatest/issues
 Depends: 
     R (>= 4.1.0)
