@@ -156,7 +156,7 @@ This data frame includes the `user_id` column, but this column is not required t
 
 The second argument, `formula`, and the third argument, `by`, specify which columns in the data frame represent the numerator, denominator, and group. There are three input styles available for the `formula` argument.
 
-#### 1. Standard Formula
+#### (1) Standard Formula
 
 This is the common formula format, where the left-hand side represents the target variable, and the right-hand side specifies the explanatory variable. In this case, the left-hand side should be of the form `numerator / denominator`, and the right-hand side should be the group column name. When using this style, you do not need to specify the `by` argument.
 
@@ -164,7 +164,7 @@ This is the common formula format, where the left-hand side represents the targe
 deltatest(data, clicks / pageviews ~ group)
 ```
 
-#### 2. Lambda Formula
+#### (2) Lambda Formula
 
 This is a relatively new way to express functions within a formula, where the function is written on the right-hand side of the formula. Specifically, you can write the function as `~ numerator / denominator`. In this style, you must specify the group column using the `by` argument.
 
@@ -172,7 +172,7 @@ This is a relatively new way to express functions within a formula, where the fu
 deltatest(data, ~ clicks / pageviews, by = group)
 ```
 
-#### 3. NSE (Non-Standard Evaluation)
+#### (3) NSE (Non-Standard Evaluation)
 
 In this style, you can simply write `numerator / denominator`. The input is parsed using R's non-standard evaluation (NSE) feature, and you must specify the group column using the `by` argument.
 
@@ -215,6 +215,12 @@ result$estimate
 result$p.value
 
 result$conf.int
+```
+
+You can also tidy the results by applying the `tidy` function from the **broom** package.
+
+```{r}
+broom::tidy(result)
 ```
 
 For more details, refer to `help(deltatest)`.

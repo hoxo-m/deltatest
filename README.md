@@ -180,7 +180,7 @@ which columns in the data frame represent the numerator, denominator,
 and group. There are three input styles available for the `formula`
 argument.
 
-#### 1. Standard Formula
+#### (1) Standard Formula
 
 This is the common formula format, where the left-hand side represents
 the target variable, and the right-hand side specifies the explanatory
@@ -193,7 +193,7 @@ argument.
 deltatest(data, clicks / pageviews ~ group)
 ```
 
-#### 2. Lambda Formula
+#### (2) Lambda Formula
 
 This is a relatively new way to express functions within a formula,
 where the function is written on the right-hand side of the formula.
@@ -205,7 +205,7 @@ argument.
 deltatest(data, ~ clicks / pageviews, by = group)
 ```
 
-#### 3. NSE (Non-Standard Evaluation)
+#### (3) NSE (Non-Standard Evaluation)
 
 In this style, you can simply write `numerator / denominator`. The input
 is parsed using R’s non-standard evaluation (NSE) feature, and you must
@@ -277,6 +277,18 @@ result$conf.int
 #> [1] -0.01410593  0.01949536
 #> attr(,"conf.level")
 #> [1] 0.95
+```
+
+You can also tidy the results by applying the `tidy` function from the
+**broom** package.
+
+``` r
+broom::tidy(result)
+#> # A tibble: 1 × 9
+#>   estimate estimate1 estimate2 statistic p.value conf.low conf.high method      
+#>      <dbl>     <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl> <chr>       
+#> 1  0.00269     0.246     0.249     0.314   0.753  -0.0141    0.0195 Two Sample …
+#> # ℹ 1 more variable: alternative <chr>
 ```
 
 For more details, refer to `help(deltatest)`.
