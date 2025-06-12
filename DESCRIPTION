@@ -18,6 +18,7 @@ BugReports: https://github.com/hoxo-m/deltatest/issues
 Depends: 
     R (>= 4.1.0)
 Imports:
+    broom,
     glue,
     R6 (>= 2.6.1),
     rlang,
