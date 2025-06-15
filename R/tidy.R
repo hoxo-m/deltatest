@@ -2,12 +2,15 @@
 #' @method tidy deltatest
 #' @export
 tidy.deltatest <- function(x, ...) {
-  method <- x$method
-  x$method <- "Welch Two Sample t-test"
-  x$estimate <- x$estimate[1:2]
-  tidy <- get("tidy.htest", asNamespace("broom"))
-  result <- tidy(x, ...)
-  result$method <- method
-  result$estimate <- -result$estimate
-  result
+  tibble::tibble(
+    estimate = unname(x$estimate[2] - x$estimate[1]),
+    estimate1 = unname(x$estimate[1]),
+    estimate2 = unname(x$estimate[2]),
+    statistic = x$statistic,
+    p.value = x$p.value,
+    conf.low = x$conf.int[1],
+    conf.high = x$conf.int[2],
+    method = x$method,
+    alternative = x$alternative
+  )
 }
