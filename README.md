@@ -285,9 +285,9 @@ You can also tidy the results by applying the `tidy` function from the
 ``` r
 broom::tidy(result)
 #> # A tibble: 1 × 9
-#>   estimate estimate1 estimate2 statistic p.value conf.low conf.high method      
-#>      <dbl>     <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl> <chr>       
-#> 1  0.00269     0.246     0.249     0.314   0.753  -0.0141    0.0195 Two Sample …
+#>   estimate est_ctrl est_treat statistic p.value conf.low conf.high method       
+#>      <dbl>    <dbl>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl> <chr>        
+#> 1  0.00269    0.246     0.249     0.314   0.753  -0.0141    0.0195 Two Sample Z…
 #> # ℹ 1 more variable: alternative <chr>
 ```
 

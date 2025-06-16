@@ -11,8 +11,8 @@ dt <- deltatest(df, click / pageview, by = group, quiet = TRUE)
 
 expected <- tibble::tibble(
   estimate = -0.046554475,
-  estimate1 = 0.23496027,
-  estimate2 = 0.188405797,
+  est_ctrl = 0.23496027,
+  est_treat = 0.188405797,
   statistic = c(Z = -1.241565940),
   p.value = 0.214396755,
   conf.low = -0.12004642,
