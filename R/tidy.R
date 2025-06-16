@@ -4,8 +4,8 @@
 tidy.deltatest <- function(x, ...) {
   tibble::tibble(
     estimate = unname(x$estimate[2] - x$estimate[1]),
-    estimate1 = unname(x$estimate[1]),
-    estimate2 = unname(x$estimate[2]),
+    est_ctrl = unname(x$estimate[1]),
+    est_treat = unname(x$estimate[2]),
     statistic = x$statistic,
     p.value = x$p.value,
     conf.low = x$conf.int[1],
