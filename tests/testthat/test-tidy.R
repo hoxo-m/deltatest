@@ -21,6 +21,18 @@ expected <- tibble::tibble(
   alternative = "two.sided"
 )
 
+expected_relative_change <- tibble::tibble(
+  estimate = 0.801862354,
+  est_ctrl = 0.23496027,
+  est_treat = 0.188405797,
+  statistic = c(Z = -1.328086),
+  p.value = 0.184149695,
+  conf.low = 0.5094546,
+  conf.high = 1.0942701,
+  method = "Two Sample Z-test Using the Delta Method",
+  alternative = "two.sided"
+)
+
 # tests -------------------------------------------------------------------
 test_that("tidy() works", {
   act <- broom::tidy(dt)
@@ -41,4 +53,13 @@ test_that("augment() throws an error", {
     broom::augment(dt),
     regexp = "only defined for chi squared hypothesis tests"
   )
+})
+
+test_that("tidy() works for relative change", {
+  dt <- deltatest(df, click / pageview, by = group, type = "relative_change",
+                  quiet = TRUE)
+  act <- broom::tidy(dt)
+
+  expect_s3_class(act, "tbl_df")
+  expect_equal(act, expected_relative_change)
 })
