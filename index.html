@@ -263,9 +263,9 @@
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 9</span></span>
-<span><span class="co">#&gt;   estimate estimate1 estimate2 statistic p.value conf.low conf.high method      </span></span>
-<span><span class="co">#&gt;      &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;       </span></span>
-<span><span class="co">#&gt; 1  0.00269     0.246     0.249     0.314   0.753  -0.0141    0.0195 Two Sample …</span></span>
+<span><span class="co">#&gt;   estimate est_ctrl est_treat statistic p.value conf.low conf.high method       </span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;        </span></span>
+<span><span class="co">#&gt; 1  0.00269    0.246     0.249     0.314   0.753  -0.0141    0.0195 Two Sample Z…</span></span>
 <span><span class="co">#&gt; # ℹ 1 more variable: alternative &lt;chr&gt;</span></span></code></pre></div>
 <p>For more details, refer to <code><a href="reference/deltatest.html">help(deltatest)</a></code>.</p>
 </div>
