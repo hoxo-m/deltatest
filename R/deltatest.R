@@ -274,7 +274,13 @@ deltatest_impl <- function(numer_c, denom_c, numer_t, denom_t,
     null_value <- c("relative change in means between control and treatment" = 0)
   }
 
-  p_value <- unname(2 * pnorm(-abs(z_score)))
+  if (alternative == "two.sided") {
+    p_value <- unname(2 * pnorm(-abs(z_score)))
+  } else if (alternative == "less") {
+    p_value <- unname(pnorm(z_score))
+  } else {
+    p_value <- unname(pnorm(z_score, lower.tail = FALSE))
+  }
 
   info <- rbind(
     delta_method_c$get_info(alternative = alternative, conf_level = conf.level),

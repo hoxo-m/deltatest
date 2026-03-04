@@ -228,7 +228,7 @@ test_that("'alternative' = 'two.sided", {
 
 test_that("'alternative' = 'less", {
   expected_result$statistic <- c(Z = -1.24156594)
-  expected_result$p.value <- 0.214396755
+  expected_result$p.value <- 0.107198378
   expected_result$conf.int <- structure(c(-Inf, 0.0151219086), conf.level = 0.95)
   expected_result$alternative <- "less"
 
@@ -239,7 +239,7 @@ test_that("'alternative' = 'less", {
 
 test_that("'alternative' = 'greater", {
   expected_result$statistic <- c(Z = -1.24156594)
-  expected_result$p.value <- 0.214396755
+  expected_result$p.value <- 0.892801622
   expected_result$conf.int <- structure(c(-0.108230859, Inf), conf.level = 0.95)
   expected_result$alternative <- "greater"
 
