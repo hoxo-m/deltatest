@@ -21,7 +21,7 @@ n_user <- 2000L
 set.seed(314)
 p_values <- NULL
 for (i in 1:5000) {
-  df <- deltatest::generate_dummy_data(n_user)
+  df <- deltatest::generate_dummy_data(n_user, lambda = 0.7)
 
   result <- ztest(df)
 
@@ -33,7 +33,7 @@ saveRDS(p_values, "data-raw/p_values_from_standard_Z_test.rds")
 set.seed(314)
 p_values <- NULL
 for (i in 1:5000) {
-  df <- generate_dummy_data(n_user) |>
+  df <- generate_dummy_data(n_user, lambda = 0.7) |>
     group_by(user_id, group) |>
     summarise(click = sum(metric), pageview = n(), .groups = "drop")
 
@@ -42,4 +42,4 @@ for (i in 1:5000) {
   p_values[i] <- result$p.value
 }
 
-saveRDS(p_values, "data-raw/p_values_from_Delta_meethod.rds")
+saveRDS(p_values, "data-raw/p_values_from_Delta_method.rds")

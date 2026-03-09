@@ -22,6 +22,50 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/hoxo-m/deltatest/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hoxo-m/deltatest/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
+## Quick Start
+
+`deltatest` performs two-sample Z-tests using the **delta method**.
+
+It is designed for common settings in online experiments where:
+
+- randomization is done at the **user** level, but
+- the metric is measured at a finer unit such as **page views** or **sessions**.
+
+In such settings, **naive tests can underestimate uncertainty**—for example, **standard Z-tests**, **chi-squared tests**, or **tests for differences in proportions**—because observations within a user are not independent. `deltatest` applies a delta-method-based variance estimator to account for this issue.
+
+```r
+# Install the released version from CRAN
+install.packages("deltatest")
+
+# Load packages
+library(dplyr)
+library(deltatest)
+
+# Generate dummy data
+data <- deltatest::generate_dummy_data(2000) |>
+  mutate(group = if_else(group == 0, "control", "treatment")) |>
+  group_by(user_id, group) |>
+  summarise(clicks = sum(metric), pageviews = n(), .groups = "drop")
+
+# Run a test
+deltatest(data, clicks / pageviews, by = group)
+```
+
+Typical output:
+
+```
+Two Sample Z-test Using the Delta Method
+
+data:  clicks/pageviews by group
+Z = 0.31437, p-value = 0.7532
+alternative hypothesis: true difference in means between control and treatment is not equal to 0
+95 percent confidence interval:
+ -0.01410593  0.01949536
+sample estimates:
+  mean in control mean in treatment        difference
+      0.245959325       0.248654038       0.002694713
+```
+
 ## 1. Overview
 
 In online A/B testing, we often face a significant practical challenge: the randomization unit differs from the analysis unit. Typically, control and treatment groups are randomly assigned at the user level, while metrics—such as click-through rate—are measured at a more granular level (e.g., per page-view). In this case, the randomization unit is user, but the analysis unit is page-view.
@@ -53,7 +97,7 @@ df <- data.frame(p_value = p_values) |>
 ggplot(df, aes(p, prop)) +
   geom_col() +
   geom_hline(yintercept = 0.05, color = "red") +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.05)) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.05), limits = c(0, 0.1)) +
   xlab("p-value") + ylab("proportion") +
   ggtitle("p-values from standard Z-test on correlated data") +
   theme(axis.text.x = element_text(angle = 60, hjust = 1), 
@@ -89,7 +133,7 @@ deltatest(data, clicks / pageviews, by = group)
 This version of the Z-test yields p-values that follow the expected uniform distribution under the null hypothesis, even when within-user correlation is present.
 
 ```{r p-values-from-delta-method, echo=FALSE, fig.height=3, fig.width=4, fig.alt="p-values from Z-test with Delta method on correlated data"}
-p_values <- readRDS("data-raw/p_values_from_Delta_meethod.rds")
+p_values <- readRDS("data-raw/p_values_from_Delta_method.rds")
 
 df <- data.frame(p_value = p_values) |>
   mutate(range = cut(p_value, breaks = seq(0, 1, by = 0.05))) |>
@@ -100,7 +144,7 @@ df <- data.frame(p_value = p_values) |>
 ggplot(df, aes(p, prop)) +
   geom_col() +
   geom_hline(yintercept = 0.05, color = "red") +
-  scale_y_continuous(breaks = seq(0, 1, by = 0.01)) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.05), limits = c(0, 0.1)) +
   xlab("p-value") + ylab("proportion") +
   ggtitle("p-values from Z-test with Delta method on correlated data") +
   theme(axis.text.x = element_text(angle = 60, hjust = 1), 
@@ -196,7 +240,7 @@ For this argument, list the two types of elements in the group column in the ord
 
 #### `type`
 
-By default, `deltatest` tests the difference between two groups. If you specify `type = 'relative_change'`, it tests the rate of change, i.e., $(\mu_{t} - \mu_{c}) / \mu_{c}$ where $\mu_c$ and $\mu_t$ represent the mean values of the control group and the treatment group, respectively.
+By default, `deltatest` tests the difference between two groups. If you specify `type = "relative_change"`, it tests the rate of change, i.e., (μ_t - μ_c) / μ_c where μ_c and μ_t represent the mean values of the control group and the treatment group, respectively.
 
 ### 3.4 Return Value
 
