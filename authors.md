@@ -19,13 +19,13 @@ Source:
 [`DESCRIPTION`](https://github.com/hoxo-m/deltatest/blob/main/DESCRIPTION)
 
 Makiyama K (2026). *deltatest: Statistical Hypothesis Testing Using the
-Delta Method*. R package version 0.1.0.9003,
+Delta Method*. R package version 0.2.0,
 <https://github.com/hoxo-m/deltatest>.
 
     @Manual{,
       title = {deltatest: Statistical Hypothesis Testing Using the Delta Method},
       author = {Koji Makiyama},
       year = {2026},
-      note = {R package version 0.1.0.9003},
+      note = {R package version 0.2.0},
       url = {https://github.com/hoxo-m/deltatest},
     }
