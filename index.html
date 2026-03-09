@@ -74,6 +74,44 @@
 <!-- badges: start -->
 
 <div class="section level2">
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<p><code>deltatest</code> performs two-sample Z-tests using the <strong>delta method</strong>.</p>
+<p>It is designed for common settings in online experiments where:</p>
+<ul>
+<li>randomization is done at the <strong>user</strong> level, but</li>
+<li>the metric is measured at a finer unit such as <strong>page views</strong> or <strong>sessions</strong>.</li>
+</ul>
+<p>In such settings, <strong>naive tests can underestimate uncertainty</strong>—for example, <strong>standard Z-tests</strong>, <strong>chi-squared tests</strong>, or <strong>tests for differences in proportions</strong>—because observations within a user are not independent. <code>deltatest</code> applies a delta-method-based variance estimator to account for this issue.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install the released version from CRAN</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"deltatest"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Load packages</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hoxo-m/deltatest" class="external-link">deltatest</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate dummy data</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">deltatest</span><span class="fu">::</span><span class="fu"><a href="reference/generate_dummy_data.html">generate_dummy_data</a></span><span class="op">(</span><span class="fl">2000</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>group <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span><span class="va">group</span> <span class="op">==</span> <span class="fl">0</span>, <span class="st">"control"</span>, <span class="st">"treatment"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">user_id</span>, <span class="va">group</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>clicks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">metric</span><span class="op">)</span>, pageviews <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run a test</span></span>
+<span><span class="fu"><a href="reference/deltatest.html">deltatest</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">clicks</span> <span class="op">/</span> <span class="va">pageviews</span>, by <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span></code></pre></div>
+<p>Typical output:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>Two Sample Z<span class="sc">-</span>test Using the Delta Method</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>data<span class="sc">:</span>  clicks<span class="sc">/</span>pageviews by group</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>Z <span class="ot">=</span> <span class="fl">0.31437</span>, p<span class="sc">-</span>value <span class="ot">=</span> <span class="fl">0.7532</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>alternative hypothesis<span class="sc">:</span> true difference <span class="cf">in</span> means between control and treatment is not equal to <span class="dv">0</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="dv">95</span> percent confidence interval<span class="sc">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a> <span class="sc">-</span><span class="fl">0.01410593</span>  <span class="fl">0.01949536</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>sample estimates<span class="sc">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  mean <span class="cf">in</span> control mean <span class="cf">in</span> treatment        difference</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>      <span class="fl">0.245959325</span>       <span class="fl">0.248654038</span>       <span class="fl">0.002694713</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="id_1-overview">1. Overview<a class="anchor" aria-label="anchor" href="#id_1-overview"></a>
 </h2>
 <p>In online A/B testing, we often face a significant practical challenge: the randomization unit differs from the analysis unit. Typically, control and treatment groups are randomly assigned at the user level, while metrics—such as click-through rate—are measured at a more granular level (e.g., per page-view). In this case, the randomization unit is user, but the analysis unit is page-view.</p>
@@ -82,7 +120,7 @@
 <p><img src="reference/figures/README-p-values-from-z-test-1.png" alt="p-values from standard Z-test on correlated data" width="400"></p>
 <p>To address this problem, Deng et al. (2018) proposed a modified statistical hypothesis testing method. Their approach replaces the standard variance estimation formula in the Z-test with an approximate formula derived via the Delta method, which accounts for within-user correlation. To simplify the application of this method, the <strong>deltatest</strong> package has been developed.</p>
 <p>To illustrate how to use this package, we prepare a data frame that includes columns for the number of clicks and page-views aggregated for each user. This data frame also contains a column indicating whether each user was assigned to the control or treatment group.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">n_user</span> <span class="op">&lt;-</span> <span class="fl">2000</span></span>
@@ -109,7 +147,7 @@
 <span><span class="co">#&gt; 10      10 control        0        17</span></span>
 <span><span class="co">#&gt; # ℹ 1,990 more rows</span></span></code></pre></div>
 <p>The statistical hypothesis test using the Delta method can then be performed on this data as follows:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hoxo-m/deltatest" class="external-link">deltatest</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/deltatest.html">deltatest</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">clicks</span> <span class="op">/</span> <span class="va">pageviews</span>, by <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span>
@@ -131,10 +169,10 @@
 <h2 id="id_2-installation">2. Installation<a class="anchor" aria-label="anchor" href="#id_2-installation"></a>
 </h2>
 <p>You can install the <strong>deltatest</strong> package from <a href="https://cran.r-project.org/package=deltatest" class="external-link">CRAN</a>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"deltatest"</span><span class="op">)</span></span></code></pre></div>
 <p>You can also install the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"hoxo-m/deltatest"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -152,7 +190,7 @@
 </ul>
 <p>Note that the denominator should match the analysis unit.</p>
 <p>The <strong>deltatest</strong> package provides the <code>generate_dummy_data</code> function to create dummy data. It generates metric values per page-view, so you need to aggregate the data by user.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">n_user</span> <span class="op">&lt;-</span> <span class="fl">2000</span></span>
@@ -187,28 +225,28 @@
 <h4 id="id_1-standard-formula">(1) Standard Formula<a class="anchor" aria-label="anchor" href="#id_1-standard-formula"></a>
 </h4>
 <p>This is the common formula format, where the left-hand side represents the target variable, and the right-hand side specifies the explanatory variable. In this case, the left-hand side should be of the form <code>numerator / denominator</code>, and the right-hand side should be the group column name. When using this style, you do not need to specify the <code>by</code> argument.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/deltatest.html">deltatest</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">clicks</span> <span class="op">/</span> <span class="va">pageviews</span> <span class="op">~</span> <span class="va">group</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="id_2-lambda-formula">(2) Lambda Formula<a class="anchor" aria-label="anchor" href="#id_2-lambda-formula"></a>
 </h4>
 <p>This is a relatively new way to express functions within a formula, where the function is written on the right-hand side of the formula. Specifically, you can write the function as <code>~ numerator / denominator</code>. In this style, you must specify the group column using the <code>by</code> argument.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/deltatest.html">deltatest</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">~</span> <span class="va">clicks</span> <span class="op">/</span> <span class="va">pageviews</span>, by <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="id_3-nse-non-standard-evaluation">(3) NSE (Non-Standard Evaluation)<a class="anchor" aria-label="anchor" href="#id_3-nse-non-standard-evaluation"></a>
 </h4>
 <p>In this style, you can simply write <code>numerator / denominator</code>. The input is parsed using R’s non-standard evaluation (NSE) feature, and you must specify the group column using the <code>by</code> argument.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/deltatest.html">deltatest</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">clicks</span> <span class="op">/</span> <span class="va">pageviews</span>, by <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="with-calculation-applicable-to-all-styles">With Calculation (Applicable to All Styles)<a class="anchor" aria-label="anchor" href="#with-calculation-applicable-to-all-styles"></a>
 </h4>
 <p>All styles accept calculations. For example, if your data frame contains only columns for the positive count and negative count, you can express the metric as follows:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/deltatest.html">deltatest</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">pos</span> <span class="op">/</span> <span class="op">(</span><span class="va">pos</span> <span class="op">+</span> <span class="va">neg</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -225,14 +263,14 @@
 <h4 id="type">
 <code>type</code><a class="anchor" aria-label="anchor" href="#type"></a>
 </h4>
-<p>By default, <code>deltatest</code> tests the difference between two groups. If you specify <code>type = 'relative_change'</code>, it tests the rate of change, i.e., <span class="math inline">\((\mu_{t} - \mu_{c}) / \mu_{c}\)</span> where <span class="math inline">\(\mu_c\)</span> and <span class="math inline">\(\mu_t\)</span> represent the mean values of the control group and the treatment group, respectively.</p>
+<p>By default, <code>deltatest</code> tests the difference between two groups. If you specify <code>type = "relative_change"</code>, it tests the rate of change, i.e., (μ_t - μ_c) / μ_c where μ_c and μ_t represent the mean values of the control group and the treatment group, respectively.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="id_34-return-value">3.4 Return Value<a class="anchor" aria-label="anchor" href="#id_34-return-value"></a>
 </h3>
 <p>The return value of <code>deltatest</code> is an object of class <code>htest</code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/deltatest.html">deltatest</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">clicks</span> <span class="op">/</span> <span class="va">pageviews</span>, by <span class="op">=</span> <span class="va">group</span><span class="op">)</span></span>
 <span><span class="va">result</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -247,7 +285,7 @@
 <span><span class="co">#&gt;   mean in control mean in treatment        difference </span></span>
 <span><span class="co">#&gt;       0.245959325       0.248654038       0.002694713</span></span></code></pre></div>
 <p>This object contains the estimates, the p-value, the confidence interval, and more.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span><span class="op">$</span><span class="va">estimate</span></span>
 <span><span class="co">#&gt;   mean in control mean in treatment        difference </span></span>
 <span><span class="co">#&gt;       0.245959325       0.248654038       0.002694713</span></span>
@@ -260,7 +298,7 @@
 <span><span class="co">#&gt; attr(,"conf.level")</span></span>
 <span><span class="co">#&gt; [1] 0.95</span></span></code></pre></div>
 <p>You can also tidy the results by applying the <code>tidy</code> function from the <strong>broom</strong> package.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html" class="external-link">tidy</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 9</span></span>
 <span><span class="co">#&gt;   estimate mean_ctrl mean_treat statistic p.value conf.low conf.high method     </span></span>

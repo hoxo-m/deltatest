@@ -1,5 +1,54 @@
 # deltatest: Statistical Hypothesis Testing Using the Delta Method for Online A/B Testing
 
+## Quick Start
+
+`deltatest` performs two-sample Z-tests using the **delta method**.
+
+It is designed for common settings in online experiments where:
+
+- randomization is done at the **user** level, but
+- the metric is measured at a finer unit such as **page views** or
+  **sessions**.
+
+In such settings, **naive tests can underestimate uncertainty**—for
+example, **standard Z-tests**, **chi-squared tests**, or **tests for
+differences in proportions**—because observations within a user are not
+independent. `deltatest` applies a delta-method-based variance estimator
+to account for this issue.
+
+``` r
+# Install the released version from CRAN
+install.packages("deltatest")
+
+# Load packages
+library(dplyr)
+library(deltatest)
+
+# Generate dummy data
+data <- deltatest::generate_dummy_data(2000) |>
+  mutate(group = if_else(group == 0, "control", "treatment")) |>
+  group_by(user_id, group) |>
+  summarise(clicks = sum(metric), pageviews = n(), .groups = "drop")
+
+# Run a test
+deltatest(data, clicks / pageviews, by = group)
+```
+
+Typical output:
+
+``` R
+Two Sample Z-test Using the Delta Method
+
+data:  clicks/pageviews by group
+Z = 0.31437, p-value = 0.7532
+alternative hypothesis: true difference in means between control and treatment is not equal to 0
+95 percent confidence interval:
+ -0.01410593  0.01949536
+sample estimates:
+  mean in control mean in treatment        difference
+      0.245959325       0.248654038       0.002694713
+```
+
 ## 1. Overview
 
 In online A/B testing, we often face a significant practical challenge:
@@ -230,10 +279,9 @@ will display a message to that effect. To suppress the message, set the
 #### `type`
 
 By default, `deltatest` tests the difference between two groups. If you
-specify `type = 'relative_change'`, it tests the rate of change, i.e.,
-\\(\mu\_{t} - \mu\_{c}) / \mu\_{c}\\ where \\\mu_c\\ and \\\mu_t\\
-represent the mean values of the control group and the treatment group,
-respectively.
+specify `type = "relative_change"`, it tests the rate of change, i.e.,
+(μ_t - μ_c) / μ_c where μ_c and μ_t represent the mean values of the
+control group and the treatment group, respectively.
 
 ### 3.4 Return Value
 
