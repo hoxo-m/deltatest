@@ -9,6 +9,8 @@
 
 - **Shinichi Takayanagi**. Medium.
 
+- **Daisuke Ichikawa**. Expert.
+
 - **LY Corporation Analytics Solution Enhancement Team**. Sponsor.
 
 ## Citation
