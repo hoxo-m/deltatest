@@ -6,6 +6,7 @@ Authors@R: c(
     person("Koji", "Makiyama", , "hoxo.smile@gmail.com", role = c("aut", "cre", "cph")),
     person("Kazuyuki", "Sano", role = c("ctb", "wdc")),
     person("Shinichi", "Takayanagi", , "shinichi.takayanagi@gmail.com", role = "med"),
+    person("Daisuke", "Ichikawa", role = "exp"),
     person("LY Corporation Analytics Solution Enhancement Team", role = "spn")
   )
 Description: Statistical hypothesis testing using the Delta method as
@@ -36,4 +37,4 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
