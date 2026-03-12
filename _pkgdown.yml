@@ -13,3 +13,5 @@ news:
   releases:
   - text: "Version 0.1.0"
     href: https://hoxo-m.github.io/blog/posts/deltatest/
+  - text: "Version 0.2.0"
+    href: https://hoxo-m.github.io/blog/posts/deltatest-0-2-0/
