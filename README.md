@@ -12,19 +12,19 @@
 
 ## Quick Start
 
-`deltatest` performs two-sample Z-tests using the **delta method**.
+The **deltatest** package provides `deltatest()`, a function for
+performing two-sample Z-tests using the delta method.
 
-It is designed for common settings in online experiments where:
+It is designed for common settings in online A/B testing where:
 
-- randomization is done at the **user** level, but
-- the metric is measured at a finer unit such as **page views** or
-  **sessions**.
+- randomization is done at the user level, but
+- the metric is measured at a finer unit such as page-views or sessions.
 
-In such settings, **naive tests can underestimate uncertainty**—for
-example, **standard Z-tests**, **chi-squared tests**, or **tests for
-differences in proportions**—because observations within a user are not
-independent. `deltatest` applies a delta-method-based variance estimator
-to account for this issue.
+In such settings, naive tests can underestimate uncertainty—for example,
+standard Z-tests, chi-squared tests, or tests for differences in
+proportions—because observations within a user are not independent.
+`deltatest()` addresses this issue by using a delta-method-based
+variance estimator.
 
 ``` r
 # Install the released version from CRAN

@@ -9,6 +9,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
+  dpi = 192,
+  fig.width = 4,
+  fig.height = 3,
   out.width = 400,
   message = FALSE
 )
@@ -24,14 +27,14 @@ knitr::opts_chunk$set(
 
 ## Quick Start
 
-`deltatest` performs two-sample Z-tests using the **delta method**.
+The **deltatest** package provides `deltatest()`, a function for performing two-sample Z-tests using the delta method.
 
-It is designed for common settings in online experiments where:
+It is designed for common settings in online A/B testing where:
 
-- randomization is done at the **user** level, but
-- the metric is measured at a finer unit such as **page views** or **sessions**.
+- randomization is done at the user level, but
+- the metric is measured at a finer unit such as page-views or sessions.
 
-In such settings, **naive tests can underestimate uncertainty**—for example, **standard Z-tests**, **chi-squared tests**, or **tests for differences in proportions**—because observations within a user are not independent. `deltatest` applies a delta-method-based variance estimator to account for this issue.
+In such settings, naive tests can underestimate uncertainty—for example, standard Z-tests, chi-squared tests, or tests for differences in proportions—because observations within a user are not independent. `deltatest()` addresses this issue by using a delta-method-based variance estimator.
 
 ```r
 # Install the released version from CRAN
@@ -74,7 +77,7 @@ This discrepancy raises concerns for statistical hypothesis testing, which assum
 
 When the standard Z-test is applied to such correlated data, the resulting  p-values do not follow the expected uniform distribution under the null hypothesis. As a result, smaller p-values tend to occur more frequently even when there is no true difference, increasing the risk of falsely detecting a significant difference.
 
-```{r p-values-from-z-test, echo=FALSE, fig.height=3, fig.width=4, fig.alt="p-values from standard Z-test on correlated data"}
+```{r p-values-from-z-test, echo=FALSE, fig.alt="p-values from standard Z-test on correlated data"}
 library(dplyr)
 library(ggplot2)
 
@@ -132,7 +135,7 @@ deltatest(data, clicks / pageviews, by = group)
 
 This version of the Z-test yields p-values that follow the expected uniform distribution under the null hypothesis, even when within-user correlation is present.
 
-```{r p-values-from-delta-method, echo=FALSE, fig.height=3, fig.width=4, fig.alt="p-values from Z-test with Delta method on correlated data"}
+```{r p-values-from-delta-method, echo=FALSE, fig.alt="p-values from Z-test with Delta method on correlated data"}
 p_values <- readRDS("data-raw/p_values_from_Delta_method.rds")
 
 df <- data.frame(p_value = p_values) |>
@@ -148,7 +151,7 @@ ggplot(df, aes(p, prop)) +
   xlab("p-value") + ylab("proportion") +
   ggtitle("p-values from Z-test with Delta method on correlated data") +
   theme(axis.text.x = element_text(angle = 60, hjust = 1), 
-        plot.title = element_text(size = 10))
+        plot.title = element_text(size = 9.5))
 ```
 
 ## 2. Installation
