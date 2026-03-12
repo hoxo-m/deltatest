@@ -77,13 +77,13 @@
 <div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<p><code>deltatest</code> performs two-sample Z-tests using the <strong>delta method</strong>.</p>
-<p>It is designed for common settings in online experiments where:</p>
+<p>The <strong>deltatest</strong> package provides <code><a href="reference/deltatest.html">deltatest()</a></code>, a function for performing two-sample Z-tests using the delta method.</p>
+<p>It is designed for common settings in online A/B testing where:</p>
 <ul>
-<li>randomization is done at the <strong>user</strong> level, but</li>
-<li>the metric is measured at a finer unit such as <strong>page views</strong> or <strong>sessions</strong>.</li>
+<li>randomization is done at the user level, but</li>
+<li>the metric is measured at a finer unit such as page-views or sessions.</li>
 </ul>
-<p>In such settings, <strong>naive tests can underestimate uncertainty</strong>—for example, <strong>standard Z-tests</strong>, <strong>chi-squared tests</strong>, or <strong>tests for differences in proportions</strong>—because observations within a user are not independent. <code>deltatest</code> applies a delta-method-based variance estimator to account for this issue.</p>
+<p>In such settings, naive tests can underestimate uncertainty—for example, standard Z-tests, chi-squared tests, or tests for differences in proportions—because observations within a user are not independent. <code><a href="reference/deltatest.html">deltatest()</a></code> addresses this issue by using a delta-method-based variance estimator.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install the released version from CRAN</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"deltatest"</span><span class="op">)</span></span>
