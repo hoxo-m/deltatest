@@ -16,7 +16,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/hoxo-m/deltatest/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/hoxo-m/deltatest/blob/v0.2.0/DESCRIPTION)
 
 Makiyama K (2026). *deltatest: Statistical Hypothesis Testing Using the
 Delta Method*. R package version 0.2.0,
