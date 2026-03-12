@@ -2,7 +2,7 @@
 #' @method tidy deltatest
 #' @export
 tidy.deltatest <- function(x, ...) {
-  tibble::tibble(
+  result <- data.frame(
     estimate = unname(x$estimate[3]),
     mean_ctrl = unname(x$estimate[1]),
     mean_treat = unname(x$estimate[2]),
@@ -13,4 +13,6 @@ tidy.deltatest <- function(x, ...) {
     method = x$method,
     alternative = x$alternative
   )
+  class(result) <- c("tbl_df", "tbl", "data.frame")
+  result
 }

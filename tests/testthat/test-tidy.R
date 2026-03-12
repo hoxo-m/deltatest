@@ -9,7 +9,7 @@ df <- data |>
 
 dt <- deltatest(df, click / pageview, by = group, quiet = TRUE)
 
-expected <- tibble::tibble(
+expected <- data.frame(
   estimate = -0.046554475,
   mean_ctrl = 0.23496027,
   mean_treat = 0.188405797,
@@ -20,8 +20,9 @@ expected <- tibble::tibble(
   method = "Two Sample Z-test Using the Delta Method",
   alternative = "two.sided"
 )
+class(expected) <- c("tbl_df", "tbl", "data.frame")
 
-expected_relative_change <- tibble::tibble(
+expected_relative_change <- data.frame(
   estimate = 0.801862354,
   mean_ctrl = 0.23496027,
   mean_treat = 0.188405797,
@@ -32,6 +33,7 @@ expected_relative_change <- tibble::tibble(
   method = "Two Sample Z-test Using the Delta Method",
   alternative = "two.sided"
 )
+class(expected_relative_change) <- c("tbl_df", "tbl", "data.frame")
 
 # tests -------------------------------------------------------------------
 test_that("tidy() works", {
