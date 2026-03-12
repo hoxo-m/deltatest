@@ -2,6 +2,8 @@
 
 ## deltatest 0.2.0
 
+CRAN release: 2026-03-09
+
 - `tidy()` now supports `deltatest` objects
   ([\#8](https://github.com/hoxo-m/deltatest/issues/8),
   [\#9](https://github.com/hoxo-m/deltatest/issues/9)).
