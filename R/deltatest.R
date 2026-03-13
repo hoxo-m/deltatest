@@ -167,34 +167,37 @@ deltatest <- function(data, formula, by, group_names = "auto",
   numer_call <- rlang::call_args(metric_call)[[1L]]
   denom_call <- rlang::call_args(metric_call)[[2L]]
 
-  if (!rlang::is_symbol(numer_call)) {
-    data$numer <- eval(numer_call, data)
-    numer_call <- quote(numer)
+  if (rlang::is_symbol(numer_call)) {
+    numer_values <- data[[rlang::as_string(numer_call)]]
+  } else {
+    numer_values <- eval(numer_call, data)
   }
-  if (!rlang::is_symbol(denom_call)) {
-    data$denom <- eval(denom_call, data)
-    denom_call <- quote(denom)
+  if (rlang::is_symbol(denom_call)) {
+    denom_values <- data[[rlang::as_string(denom_call)]]
+  } else {
+    denom_values <- eval(denom_call, data)
   }
 
-  numer_col <- rlang::as_string(numer_call)
-  denom_col <- rlang::as_string(denom_call)
+  data_formatted <- data.frame(numer = numer_values,
+                               denom = denom_values,
+                               group = data[[group_col]],
+                               stringsAsFactors = FALSE)
 
-  data <- data[c(numer_col, denom_col, group_col)]
-  comlete_cases <- complete.cases(data)
+  comlete_cases <- complete.cases(data_formatted)
   if (na.rm) {
-    data <- data[comlete_cases, ]
+    data_formatted <- data_formatted[comlete_cases, ]
   } else if (!all(comlete_cases)) {
     na_row_number <- which(!comlete_cases)[1]
     stop(glue("NA value is found in the data at row number {na_row_number}. By setting the 'na.rm' argument to 'TRUE', you can remove it from the data and proceed with execution."))
   }
 
   # execute Z-test using the Delta method -----------------------------------
-  data_split <- split_control_treatment(data, group_col, group_names, quiet)
+  data_split <- split_control_treatment(data_formatted, "group", group_names, quiet)
   group_names <- names(data_split)
   data_c <- data_split[[1L]]
   data_t <- data_split[[2L]]
-  result <- deltatest_impl(data_c[[numer_col]], data_c[[denom_col]],
-                           data_t[[numer_col]], data_t[[denom_col]],
+  result <- deltatest_impl(data_c$numer, data_c$denom,
+                           data_t$numer, data_t$denom,
                            type = type, bias_correction = bias_correction,
                            alternative = alternative, conf.level = conf.level)
   result$data.name <- data_name
