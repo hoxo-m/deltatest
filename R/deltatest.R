@@ -216,6 +216,11 @@ extract_all_literals <- function(call) {
 #' @importFrom glue glue
 split_control_treatment <- function(df, group_col, group_names, quiet) {
   df_split <- split(df, df[[group_col]])
+
+  if (length(df_split) != 2L) {
+    stop(glue("The '{group_col}' column must contain exactly two groups."))
+  }
+
   if (length(group_names) == 1L && group_names == "auto") {
     group_names <- sort(names(df_split))
     if (!quiet) {

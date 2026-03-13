@@ -145,6 +145,16 @@ test_that("'by' argument is missing", {
                "The 'by' argument is required.")
 })
 
+test_that("'by' column must contain exactly two groups", {
+  df_three_groups <- df
+  df_three_groups$group[1:10] <- 2L
+
+  expect_error(
+    deltatest(df_three_groups , click / pageview ~ group, quiet = TRUE),
+    regexp = "exactly two groups"
+  )
+})
+
 
 # group_names -------------------------------------------------------------
 test_that("'group_names' works", {
